@@ -1,0 +1,2779 @@
+<!doctype html>
+<html>
+<!-- Reader with turning pages for local & global files .epub, .zip, .html
+ v.2022.01
+project files:
+	ebook.html
+	ebook.en.json (and other localizations for ebook.html)
+adding:
+    ebook.set.html
+	ebook.set.js
+	ebook.set.en.json (and other localizations for ebook.set.html)
+    ebook.sw.js
+need:	jszip.min.js <== https://github.com/Stuk/jszip — tested with v.3.6.0
+-->
+<head>
+ <meta charset="utf-8">
+ <title>e:Book</title>
+ <script src="jszip.min.js"></script>
+ <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚️</text></svg>">
+ <style>
+:root{
+ --c-day:#121212;
+ --b-day:#fdf6e3;
+ --c-night:#eeeeee;
+ --b-night:#2a4a63;
+ --c:transparent;
+ --b:transparent;
+ --w:500px;
+ --m:50px;
+ --mc:rgba(132,132,132,.5);
+ --foot:0px;
+ --p:#67bbd073;
+ --bump-yes:#ff2400;
+ --bump-not:#4dbf00;
+ --s:#a6a6a6a6;
+ --main-shadow:var(--s);
+ --main-shadow-drop:var(--s);
+ --select-shadow:lightgreen;
+ --covcol:#3a3a3a;
+ --m-right:max(calc(100% - ((100% - var(--w)) / 2 + var(--w) + var(--m))),0px);
+ --n:min(max(calc(100% / 2.5),260px),calc(100% - var(--m-right) - var(--m)));
+ --hah:calc(100vh / 1.4);
+ --h2h:calc(var(--hah) / 2);
+ --hw:calc(100vw / 4);
+ --h:#77777777;
+ --l-right:max(calc((100vw - var(--w)) / 2),0px);
+ --l-list:calc(var(--l-right) - min(100vw,var(--w)));
+}
+.theme{
+ color:var(--c);
+ background-color:var(--b);
+ font-family:sans-serif;
+}
+html,body,header,footer,iframe,menu,nav,div,ol,ul,aside,select
+,figure h1,figure h2,figure h3,figure h4,figure h5,figure h6{
+ margin:0;padding:0;border:0;
+}
+html,body{
+ width:100%;height:100vh;overflow:hidden
+}
+input,select{font-size:.8em}
+iframe{
+ position:relative;display:block;margin:0 auto;
+ width:calc(var(--w) - 8px);
+ max-width:calc(100% - 8px);
+ height:calc(100vh - var(--foot));
+ border:none;overflow:hidden;
+ border-left:4px solid;
+ border-right:4px solid;
+ border-color:transparent
+}
+nav{
+ position:absolute;left:0;top:0;height:100vh;width:var(--n);
+ overflow-y:auto;overflow-x:hidden;
+ border-radius:5px;box-shadow:2px 2px 3px gray
+}
+nav > h1{padding:0 2px;margin:2px 0;font-size:min(calc((20vw - .5rem) / 4),1.2em)}
+nav > h1.details_open.close, #marks{box-shadow: inset 0 -24px 24px -24px var(--s)}
+nav ol, nav ul{list-style:none;margin-left:14px;margin-bottom:2px}
+nav > ol, nav > ul{margin-left:2px}
+nav a{display:block;text-decoration:none;color:var(--c);padding:0 2px}
+nav a:hover,#marks li > span:hover{background-color:var(--p)}
+nav > div.btn{z-index:100;position:fixed;width:var(--m);top:5px;left:calc(var(--n) - var(--m))}
+#marks li{position:relative}
+#marks li i{grid-area:icon;font-size:60%}
+#marks li span{grid-area:text}
+#marks li aside{grid-area:foot}
+menu{position:absolute;top:5px;right:var(--m-right);width:var(--m);
+    border-radius:5px;box-shadow:inset 28px 0 28px -20px var(--s), inset -28px 0 28px -20px var(--s)
+}
+#sea{grid-area:sea}
+#sea > div{width:calc(100% - 1px)}
+#sea div{display:grid;grid-template-columns:1fr 1fr 10fr;grid-column-gap:.16em;border-radius:5px}
+#sea div div{grid-column-gap:0;box-shadow:inset 0 20px 20px -20px var(--s),inset 0 -20px 20px -20px var(--s)}
+#sea div.search{grid-template-columns:1fr 10fr 1fr}
+#sea div.search span{display:inline-grid}
+#sea input{border-width:1px;border-color:rgb(118 118 118 / 28%)}
+#sea ul{max-height:calc(100vh / 2);overflow-y:auto;padding-bottom:9px;border-bottom:1px dashed var(--p);box-shadow: inset 0 -24px 24px -24px var(--s)}
+#read{overflow-y:auto;grid-area:read}
+.mbef:before{content:var(--mark-before)}
+.maft:after{content:var(--mark-after)}
+.ownl{color:#80808080}
+main{
+ position:absolute;left:0;right:0;top:0;margin:0 auto;
+ width:var(--w);max-width:100%;height:calc(100vh - var(--foot));
+ display:grid;grid-template-rows:1fr 1fr 1000fr;grid-template-areas:"span" "sea" "read";grid-column-gap:.1em;
+ box-shadow: inset 28px 0 28px -28px var(--main-shadow), inset -28px 0 28px -28px var(--main-shadow);border-radius:5px
+}
+main > span{color:var(--main-shadow-drop);grid-area:span}
+main > span b{
+ display:block;text-align:center;font-size:var(--m);font-family:sans-serif;opacity:.7}
+main > span i{
+ display:block;margin-top:calc(var(--m) / -3);font-size:calc(var(--m) / 3);font-family:serif}
+main > span *:nth-child(2){width:48%;text-align:right}
+main > span *:nth-child(3){margin-top:calc(var(--m) / -6);padding-left:48%;width:50%;
+ transform: scale(1) rotate(0deg) translate(0px, 0px) skew(15deg, 0deg);}
+main > span *:nth-child(4){margin-top:calc(var(--m) / -2)}
+aside{
+ border-bottom-left-radius:1em;
+ border-left: .15em dashed var(--p);border-bottom: 1px dashed var(--p);
+ padding-left:.5em;margin-left:.9em
+}
+.ppp{grid-area: 1 / 1 / 1 / 1;position:absolute;left:.45em;bottom:0;font-weight:bold;color:var(--p);
+    text-shadow: -2px -2px 3px silver}
+figure .ppp{font-size:2em;left:0}
+figure{position:relative;margin:5px 2px;cursor:pointer;border-radius:5px}
+figure img{grid-area:icon}
+figure img[src^="blob"]{margin:0 0 5px 9px;border-radius:6px 2px 2px 0;
+ box-shadow:0 5px 2px -2px #bbbbbb, 0 6px 0 -1px var(--covcol),-6px 2px #3e3e3ecc,-3.5px 3px 1px 2px var(--covcol)}
+figure figcaption{grid-area:text}
+figure aside{grid-area:foot;border-left-width:.2em}
+figure header{font-size:90%}
+figure footer{font-size:60%;font-family:serif;font-style:italic;text-align:right}
+figure h1{font-size:100%}
+figure h2{font-size:80%;font-weight:normal}
+figure h3,figure h4,figure h5,figure h6{font-size:70%;font-weight:normal}
+.col1,figure,#marks li{display:grid;grid-template-columns:min-content auto;grid-template-rows:auto;grid-template-areas:"icon text" "foot foot";grid-column-gap:.2em}
+.colA{display:grid;grid-template-columns:repeat(auto-fit,minmax(var(--m),1fr));grid-column-gap:.3em}
+section{
+ z-index:150;position:absolute;
+ width:100%;height:100vh;top:0;left:0;
+ overflow-y:auto;
+}
+section > div, section > details, section > input, .edit > b, .edit > i{display:block;width:calc(var(--m) * 10);max-width:100%;margin:5px auto}
+section > div.btn{z-index:200;position:fixed;width:var(--m);top:5px;right:5px;margin:3px}
+#service_worker{width:1.2em;height:1.2em;margin-left:calc(var(--m) - 1.2em)}
+#local_store{width:var(--m);height:var(--m)}
+label[for='local_store']{padding-right:var(--m)}
+body > footer{
+ position:relative;
+ width:100%;height:var(--foot);
+ background-color:var(--b);
+}
+dialog{width:var(--w);max-width:90%}
+dialog input{width:98%}
+dialog select option{font-style:normal;font-size:100%;color:black;direction:ltr;}
+dialog select option:first-of-type{font-style:italic;font-size:70%;color:gray;direction:rtl;}
+.diasel{font-style:italic;color:gray;direction:rtl}
+.bump{width:2px;height:var(--foot);position:absolute;top:0px;opacity:.5}
+.edit .sel2sel header, .edit footer{text-align:right;padding-right:20px;margin-left:auto;margin-right:0}
+.edit footer div.btn{display:inline-block}
+.btn{
+ position:relative;cursor:pointer;border-radius:6px;
+ width:var(--m);height:var(--m);margin:5px;font-size:calc(var(--m) / 2.27)
+}
+.btn::first-letter{
+ font-size:calc(var(--m) / 1.786);
+ vertical-align:10px;letter-spacing:calc(var(--m) / -2.174)
+}
+.btn[disabled]{pointer-events:none}
+.btn[disabled]::before{
+ position:absolute;content:'';display:block;
+ width:100%;height:100%;left:5px;top:-5px;
+ background-color:rgba(128,128,128,.5);border-radius:6px;
+ cursor:default}
+.chapar{box-shadow:0 -2px 1px lightcoral, 0 2px 1px lightcoral}
+.change{filter:brightness(86%)}
+.dn, .first_open #as, .first_open #mk, .non_db .with_db{display:none}
+.nof{font-style:italic}
+.hide{visibility:hidden;opacity:0}
+.show,main,section,nav,menu,iframe{
+ visibility:visible;opacity:1;
+ transition: visibility 0s linear 300ms, opacity 150ms;
+}
+.details_open::before, .open::before {content:'▼';display:inline-block;width:1.2rem}
+.details_close::before, .close::before {content:'▶';font-size:80%;display:inline-block;width:1.2rem}
+#msg{
+ position:absolute;left:0;bottom:var(--foot);padding:0 15px;
+ font-size:70%;;font-family:sans-serif;
+ background:var(--s);box-shadow:10px 1px 5px var(--s)
+}
+#msg a{font-weight:bold;text-decoration:none;color:var(--c)}
+#msg b[onclick],.details_open,.details_close,#marks li,.maft,.lik{cursor:pointer}
+#hah{
+ position:absolute;opacity:1;overflow:hidden;
+ width:var(--hw);height:var(--hah);bottom:0;right:calc(100% / -2);
+ text-align:right;color:transparent;font-size:var(--m);line-height:var(--hw)
+}
+.corner_right::before,.corner_left::before{content:"";display:block;opacity:1;width:200%;height:200%;position:absolute;border-radius:50%;bottom:0}
+.corner_left::before{right:unset;left:0;box-shadow: calc(var(--hw) / -2) var(--h2h) 0 0 var(--p)}
+.corner_right::before{left:unset;right:0;box-shadow: calc(var(--hw) / 2) var(--h2h) 0 0 var(--p)}
+#hah.smile{color:var(--c);left:0;height:var(--hw);background:var(--p);box-shadow:0 0 20px 20px var(--p);border-radius:50% 50% 50% 0;animation:ha_left 2s forwards}
+#hah.corner_right{right:0}
+#hah.corner_left{left:0}
+#hah.corner_right::before{animation:ha_right 1s forwards}
+#hah.corner_left::before{animation:ha_left 1s forwards}
+@keyframes ha_right{
+ 0% {left:unset;right:calc(100% / -2);opacity:0} 10% {right:0;opacity:.5}
+ 25% {opacity:1} 50% {opacity:0} 75% {opacity:1}
+ 90% {right:0;opacity:.5} 100% {right:calc(100% / -2);opacity:0}
+}
+@keyframes ha_left{
+ 0% {right:unset;left:calc(100% / -2);opacity:0} 10% {left:0;opacity:.5}
+ 25% {opacity:1} 50% {opacity:0} 75% {opacity:1}
+ 90% {left:0;opacity:.5} 100% {left:calc(100% / -2);opacity:0}
+}
+/* /////////
+#list{
+ width:var(--w);max-width:100%;
+ height:calc(100vh - var(--foot));
+ position:absolute;overflow:hidden;
+ left:100vw;top:0
+}
+#list::before {
+ content:"";display:block;
+ width:200%;height:200%;
+ position:absolute;bottom:0;right:0;
+ box-shadow: inset 0 0 0 0 var(--h), 0 0 0 0 var(--h), 0 0 0 0 var(--b);
+ border-radius:0
+}
+#list.fl{animation:list_fire 1s ease-out normal}
+#list.fl::before{animation:list_move 1s ease-out normal}
+#list.fr{animation:list_fire 1s ease-in reverse}
+#list.fr::before{animation:list_move 1s ease-in reverse}
+@keyframes list_fire{
+ 0% {left:var(--l-right)} 100% {left:var(--l-list)}
+}
+@keyframes list_move{
+ 0% {
+  right:0px;
+  box-shadow: inset 0 0 0 0 var(--h), 0 0 0 0 var(--h), 0 0 0 0 var(--b);
+  border-radius: 0;
+ }
+ 10% {
+  right:0px;
+  box-shadow: inset -2px -2px 2px 0px var(--h), -4px 8px 4px 0px var(--h), 20px 20px 0 0 var(--b);
+  border-radius: 0px 0px 50% 0px/0px 0px 10px 0px;
+ }
+ 20% {
+  right:10px;
+  box-shadow: inset -3px 3px 2px 0px var(--h), 4px 8px 4px 0px var(--h), 30px 30px 0 0 var(--b);
+  border-radius: 0px 10px 50% 0px/0px 100% 20px 0px;
+ }
+ 30% {
+  right:20px;
+  box-shadow: inset -40px 40px 40px 0px var(--h), -6px 8px 4px 0px var(--h), 50px 50px 0 0 var(--b);
+  border-radius: 0px 50px 15% 0px/0px 100% 30px 0px;
+ }
+ 80% {
+  right:10px;
+  box-shadow: inset -30px 30px 20px 0px var(--h), 0 8px 4px 0px var(--h), 30px 30px 0 0 var(--b);
+  border-radius: 0px 10px 10% 0px/0px 100% 20px 0px;
+ }
+ 90% {
+  right:0px;
+  box-shadow: inset -20px 20px 20px 0px var(--h), -4px 8px 4px 0px var(--h), 20px 20px 0 0 var(--b);
+  border-radius: 0px 0px 5% 0px/0px 0px 10px 0px;
+ }
+ 100% {
+  right:0px;
+  box-shadow: inset 0 0 0 0 var(--h), 0 0 0 0 var(--h), 0 0 0 0 var(--b);
+  border-radius: 0;
+ }
+}*/
+#read,nav,#sea ul{scrollbar-width:thin;scrollbar-color:var(--p) transparent}
+#read::-webkit-scrollbar{width:11px}
+#read::-webkit-scrollbar-track{background:transparent}
+#read::-webkit-scrollbar-thumb{background-color:var(--p);border-radius:5px}
+nav::-webkit-scrollbar{width:11px}
+nav::-webkit-scrollbar-track{background:transparent}
+nav::-webkit-scrollbar-thumb{background-color:var(--p);border-radius:5px}
+#sea ul::-webkit-scrollbar{width:11px}
+#sea ul::-webkit-scrollbar-track{background:transparent}
+#sea ul::-webkit-scrollbar-thumb{background-color:var(--p);border-radius:5px}
+ </style>
+</head>
+<body class="theme first_open">
+ <iframe onload="if(this.src)onSrc()" loading="eager" scrolling="no" border="0" frameborder="0" margin="0" allow="autoplay; clipboard-write; encrypted-media" referrerpolicy="no-referrer" allowtransparency="true"></iframe>
+ <footer></footer>
+ <main class="theme" ondrop="dropHand(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)">
+  <span><b>Open</b><i></i><i></i><b>Drag</b></span>
+  <article class="dn with_db" id="sea">
+    <div>
+     <div onclick="seaUp(true,this,'pipls','nams','auths')" class="details_open close">👤️</div>
+     <div onclick="seaUp(true,this,'tags','pana','tags',true)" class="details_open close">🎟️</div>
+     <div class="search">
+        <span class="details_open close" onclick="seaIs(this,true,true)"> </span>
+        <input type="text" class="theme" onkeydown="if(event.key==='Enter')seaIs(this,false,false)">
+        <span onclick="seaIs(this,true,false)" style="cursor:pointer">🔍</span>
+     </div>
+    </div>
+    <ul class="dn"></ul>
+  </article>
+  <article id="read"></article>
+ </main>
+ <menu>
+  <div id="as" class="btn" onclick="sh.tog('MAIN','NAV')">📃📚</div>
+  <div id="mk" class="btn" onclick="addMark()">📑🌟️</div>
+  <div id="lf" class="btn" onclick="lof.click()">💻📖</div>
+  <div id="gf" class="btn" onclick="globalFile()">🌐️📖</div>
+  <div id="ws" class="btn" onclick="fetchSet(sen)">⚙️💡️</div>
+  <input type="file" id="local_file" accept=".epub, .zip, .html" onchange="if(this.files.length>0)localFile(this.files[0])" class="dn">
+ </menu>
+ <nav class="theme hide dn"></nav>
+ <section class="theme hide sets">
+  <div class="btn" onclick="fetchSet(sen)">⚙️✖️</div>
+  <div class="col1"><input type="checkbox" id="local_store"> <label for="local_store"></label></div>
+  <div class="col1" id="swr" class="with_db dn"><input type="checkbox" id="service_worker"> <label for="service_worker"></label></div>
+ </section>
+ <div id="hah">:-)</div>
+ <span id="msg"></span>
+ <dialog class="edit"><label></label><input type="text"><span></span> <select></select>
+  <footer><div class="btn" name="confirm" onclick="dig.res()"></div> <div class="btn" name="cancel" onclick="dig.close();dig.reject(null)"></div></footer>
+ </dialog>
+</body>
+<script>//cl('DOC',{document});cl('indexedDB',window.indexedDB);
+window.URL = window.URL || window.webkitURL;
+const ifr=document.querySelector("iframe"),
+ man=document.querySelector("main"),
+ sen=document.querySelector("section"),
+ mnu=document.querySelector("menu"),
+ nav=document.querySelector("nav"),
+ fot=document.querySelector("footer"),
+ dig=document.querySelector("dialog"),
+ rad=document.getElementById("read"),
+ sea=document.getElementById("sea"),
+ lof=document.getElementById('local_file'),
+ hah=document.getElementById("hah"),
+ msg=document.getElementById("msg"),
+ fr={};//all about document inside iframe - fill into onSrc()
+function dhtml(s=''){return "data:text/html,<!doctype html><html><head><meta charset='utf-8'></head><body>"+s+"</body></html>"};
+function dimg(t='📓️'){return "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><text x='-.14em' y='.9em' font-size='90' outline='0'>"+t+"</text></svg>"};
+var ebk,pip,tga
+,db;//instance of indexedDB Library
+const dbn="eBookLibrary",dbv=1,//name&version DB
+//DB function object {objectStoreName:[setFunction,startOptions]}
+//setFunction — for get objectStore and set <element> —> call from setChange|setC|set1() —> call with two arguments (objectResultRequest,element)
+//startOptions — adding start session options  AND use on setChange() then create DB during the session
+ dbf={"styls":[setStyle,{def:true}]
+    ,"books":[addFig,{idx:'dats',count:5,direct:'prev'}]
+    ,"marks":[addMark,false],"pipls":[addSea,false],"tags":[addSea,false]};
+
+const dt={}//all about book document <== addBook(), showBook() ...
+,wh={}//all about book view port inside <iframe> <== reSume()
+,sh={};//for keep visible or not <main>, <section>, <menu>, <nav>
+sh.MAIN=sh.MENU=sh.IFRAME=true;sh.SECTION=sh.NAV=false;
+sh.set = (e)=>{//cl('sh.set tag=',e.target.nodeName)
+ if(e.propertyName=="visibility"){
+  sh[e.target.nodeName]=window.getComputedStyle(e.target).visibility=='visible';//console.log('sh.set('+e.target.nodeName+')>',sh[e.target.nodeName],'MAIN=',sh.MAIN,'NAV=',sh.NAV,'MENU=',sh.MENU,'sh.f=',sh.f?sh.f:'N')
+  if(fr.v && e.target.nodeName=='IFRAME')fr.v=false;
+  if(sh.f){sh.f();sh.f=null}// set sh.f in setSrc()
+ }
+};
+dt.r=document.styleSheets[0].cssRules[0].style;
+const sman=document.querySelector("main > span"),
+cnav=document.createElement('div'),
+ppp=document.createElement('div'),
+asd=document.createElement('aside');
+asd.insertAdjacentHTML('afterbegin','<span onclick="ediObj(this.parentNode.parentNode)" class="with_db">️📝️</span> <span onclick="delObj(this.parentNode.parentNode)">️🗑️</span>');
+ppp.classList.add('ppp');
+ppp.textContent='⋮';
+ppp.clon=()=>{
+    let p=ppp.cloneNode(true);
+    p.onclick= e => {
+        e.preventDefault();
+        if(e.target.parentNode.children[3])asd.remove();
+        else e.target.parentNode.appendChild(asd)
+    };
+    return p
+};
+cnav.classList.add('btn');
+cnav.textContent='📄✖️';
+cnav.onclick=()=>{sh.hid('NAV')};
+
+window.addEventListener('popstate',goMark,false);
+window.addEventListener("resize",reSume,false);
+window.addEventListener("orientationchange",function(){window.dispatchEvent(new Event("resize"))},false);
+document.onkeydown=keyDown;
+document.documentElement.onclick=cD;
+hah.addEventListener('animationend',e=>{e.target.classList.remove('smile','corner_left','corner_right')});
+ifr.addEventListener('transitionend',sh.set);
+man.addEventListener('transitionend',sh.set);
+sen.addEventListener('transitionend',sh.set);
+mnu.addEventListener('transitionend',sh.set);
+nav.addEventListener('transitionend',sh.set);
+nav.addEventListener('touchstart',tapStart,false);
+nav.addEventListener('touchmove',tapMove,false);
+
+const obr = new MutationObserver(ml=>{
+ for(let m of ml){
+  if(m.target==nav)if(!car(nav,nav.textContent=='') && !cnav.parentNode)nav.append(cnav);
+  if(m.target==rad)if(car(sea,!(car(sman,m.target.children.length>0))))rad.classList.remove('chapar');
+ }
+});
+obr.observe(rad,{childList:true});
+obr.observe(nav,{childList:true});
+
+window.onload = ()=>{
+ if('indexedDB' in window && window.indexedDB.databases){
+  window.indexedDB.databases().then(d=>{//cl("Array indexedDB =",d);
+    let a = d.map(db => db.name).includes(dbn);//cl("Exist "+dbn+" =",a);
+    if(a)openDB(false);
+    else set0()
+  })
+ }else set0();
+}
+function set0(){//cl('SET 00000')
+ db=false;
+ document.body.classList.add('non_db');
+ checkDB(false);
+ setDef()
+};
+if(window.location.search){globalFile(window.location.search.slice(1))};
+
+/////////fr.l=document.createElement('div');
+/////////fr.l.id='list';
+/////////fr.l.addEventListener('animationend',()=>{ fr.l.classList.remove('fr','fl') });
+/////////document.body.append(fr.l);
+
+/** on set new src to iframe - from <iframe onload="if(this.src)onSrc()"> */
+async function onSrc(){cl("onSrc() iframe load",ifr.src);
+ if(fr.v==undefined){// first & only one times call onSrc()
+  dt.r.setProperty('--foot','4px');
+  document.body.classList.remove('first_open');
+  fr.v=false
+ }
+ fr.d=ifr.contentWindow.document;//cl("iframe document",{fr.d});
+ fr.h=fr.d.documentElement;
+ fr.h.onclick=cF;
+ fr.h.onkeydown=keyDown;
+
+ fr.b=fr.d.body.style;
+ fr.b.margin=0;fr.b.padding=0;fr.b.border=0;fr.b.minHeight='88%';
+ fr.b.textAlign='justify';//???????????????????????????????????????????????????
+ fr.b.color='var(--c)';
+ fr.b.backgroundColor='var(--b)';
+
+ fr.s=fr.h.style;
+ fr.s.marginLeft='0px';
+ fr.s.margin=0;fr.s.padding=0;fr.s.border=0;
+ fr.s.height='100%';
+ if(!dt.z && (dt.b.DB.spine[dt.c].endsWith('cover.xhtml') || dt.b.DB.spine[dt.c].endsWith('titlepage.xhtml'))){
+    fr.s.display='table';fr.s.width='100%';
+    fr.b.display='table-cell';fr.b.textAlign='center';fr.b.verticalAlign='middle'
+ }else{
+    fr.s.width='calc(200% + 20px)';
+    fr.s.columns=2;fr.s.columnGap='20px';fr.s.columnFill='auto';
+ }
+
+ fr.r = fr.h.appendChild(fr.d.createElement("style")).sheet;
+ fr.r.insertRule('.move{transition:margin 1s ease-out}');
+ fr.r.insertRule(':root{--c:'+dt.r.getPropertyValue('--c')+';--b:'+dt.r.getPropertyValue('--b')+';}',0);
+ fr.h.addEventListener('transitionend',()=>{ fr.h.classList.remove('move');fr.h.dispatchEvent(new Event('scroll')) });
+
+ let t = fr.d.querySelector("title");
+ if(t){
+  t=t.textContent.trim();
+  if(t && (!dt.b.DB.title || dt.b.DB.title.length==0 || !dt.b.DB.title[0]))dt.b.DB.title=[t];
+ }else t='';
+
+ let l = document.querySelector("title");
+ if(!t && (!dt.b.DB.title || dt.b.DB.title.length==0 || !dt.b.DB.title[0])){
+  dt.b.DB.title=[filename(dt.b.DB.src)];
+  l.textContent=dt.b.DB.title[0]
+ }else{
+  if(!t || t == dt.b.DB.title[0])l.textContent=dt.b.DB.title[0];
+  else l.textContent=dt.b.DB.title[0]+' / '+t
+ };
+
+ fr.d.addEventListener('touchstart', tapStart, false);
+ fr.d.addEventListener('touchmove', tapMove, false);
+
+ let els = fr.d.querySelectorAll("body > img");//cl('onSrc() querySelectorAll IMGs:',els);
+ if(els.length>0) await Promise
+ .all(Array.from(els).map(im => new Promise(resolve => {
+	if(im.naturalWidth)resolve(im);
+	else im.onload = () => resolve(im);
+ })))
+ .then(is => { is.forEach(iWH) });
+ fr.d.querySelectorAll("div, video, audio, main, header, footer, nav, menu, span[display='block']").forEach(iWH);
+
+ wh.x=0;
+ wh.s=fr.d.body.getBoundingClientRect().width;
+ wh.a=fix((wh.s+12)/(wh.w+12));cl('onSrc() AFTER AWAIT IMGs wh.x,s,a=',wh.x,wh.s,wh.a);
+
+ let m = dt.b.mark==undefined;
+ if(!m)setPage(); else fot.set(0);
+ if(dt.b.prs)fot.book();
+ sh.hid('MAIN','MENU','NAV');
+ navMark(-1,true,m);
+ fr.h.dispatchEvent(new Event('scroll'))
+}
+function iWH(i){//cl('iWH() forEach IMAGE&VIDEO =',i);
+ let r = i.getBoundingClientRect();
+ if(r.width > wh.w){
+    if(wh.w / (r.width/r.heigh) > wh.h-4)iWHs(i,true,false);
+    else iWHs(i,false,true)
+ }else if(r.heigh > wh.h-4)iWHs(i,true,false)
+}
+function iWHs(i,w,h){
+ i.removeAttribute('width');
+ i.removeAttribute('height');
+ i.style.width = w ? 'auto' : '100%';
+ i.style.heigh = h ? 'auto' : 'calc(100vh - var(--foot))'
+}
+/** reSume on load window \ after resize window \ changeorientation \ resize <iframe> at setStyle('w') */
+function reSume(){
+ wh.w=window.innerWidth;
+ wh.h=window.innerHeight;
+ wh.l=wh.w/3;
+ wh.r=2*wh.w/3;
+ wh.t=wh.h/3;
+ wh.b=2*wh.h/3;
+
+ let p=0;//p = current page number BEFORE resize from 0 to -1, -2, -3, ...
+ wh.x=0;
+ wh.s=wh.w;
+ wh.w=ifr.getBoundingClientRect().width;
+
+ if(fr.d){
+  wh.h=fr.h.clientHeight;
+  let r = fr.d.body.getBoundingClientRect();//cl('reSume() BoundingClientRect',r);
+  wh.s = r.width;
+  wh.x = r.x;
+  p=fix((wh.x / (wh.w + 12)))
+  //console.log("reSume() if(fr.d) wh.x=",wh.x,'wh.w=',wh.w,'p=',p);
+ }
+ if(p < 0){//console.log('reSume() not first page wh.x=',wh.x,'p=',p)
+   wh.x = (wh.w+12)*p;
+   fr.s.marginLeft = wh.x+'px';
+   fot.file()
+ }
+ wh.a=fix((wh.s+12)/(wh.w+12));
+ if(wh.a+p<1){//cl('reSume() last EMPTY page')
+  wh.x=wh.x+(wh.w+12);
+  fr.s.marginLeft = wh.x+'px';
+  fot.file()
+ }console.log('reSume() result: wh.x,s,w,a',wh.x,wh.s,wh.w,wh.a);
+
+ if(ifr.src){fot.book('S');navMark(-1)}
+}
+/** ************************ Animation Move Pages *********************** */
+function cF(e){/** click on iframe */
+ if(cE(e))cB({clientX:(e.clientX+ifr.offsetLeft),clientY:e.clientY})
+}
+function cD(e){/** click on document outside iframe */
+ if(cE(e))cB(e)
+}
+function cE(e){/** exclude click on <nav>, <menu>, <main>, <section>, <A>, <dialog>... */
+ if(dig.open || !ifr.src || !sh.isRead() || e.detail>1 || getSel(false)!='')return false;
+ if(e.target && (e.target.tagName=='A' || mnu.contains(e.target) || nav.contains(e.target) || dig.contains(e.target) || e.target.tagName=='VIDEO' || e.target.tagName=='AUDIO'))return false;
+ else return true
+}
+function cB(e){/** click on document with iframe */
+  let x=0;//cl('cB()',e.clientX,e.clientY);
+  if(e.clientX<wh.l)x=1;
+  else if(e.clientX>wh.r)x=2;
+
+  let y=0;
+  if(e.clientY<wh.t)y=1;
+  else{ if(e.clientY>wh.b)y=2;
+	else if(x==0){sh.togNM();return}
+  }//cl('cB() x,y',x,y);
+
+  if(x==2 || (x==0 && y==2))movePage(-1);
+  else movePage(1)
+}
+/** animation change page: n=-1 -> move to next; n=1 <- previous */
+function movePage(n){//cl('movePage() n=',n)
+ if(n=='ArrowRight' || n=='PageDown' || n=='32')n=-1;
+ if(n=='ArrowLeft' || n=='PageUp')n=1;
+ const l = wh.x+n*(wh.w+12);
+ let i=moveOver(l);
+ if(i==null)return;//cl('movePage() from',fr.s.marginLeft,'to',l);
+ fr.h.classList.add('move');
+///////// fr.l.classList.add('f'+ (n>0 ? 'r' : 'l'));
+ fr.s.marginLeft=l+'px';
+ if(i>-1){//go to next\prev FILE
+  fr.v=true;//cl('movePage() fr.v=',fr.v);
+  sh.hid('IFRAME');
+  setFile(i)
+ };
+ if(i<0){//go to next\prev PAGE
+  wh.x=l;
+  fot.file();
+  navMark(1)
+ }
+}
+/** move over boards of the file
+ param l = future marginLeft
+ return -1 -- goto animation on next\prev PAGE
+	null -- not next\prev file into spine = make hah.animation
+	> -1 -- goto next\prev FILE ==>> return 0 | 1 | 2 .... */
+function moveOver(l){
+ let i=-1;
+ if(l>0){//previous file OR not movie
+  if(dt.z){ dt.z=undefined; dt.b.mark = dt.zmark; i=dt.c } else { dt.b.mark = false; i = dt.c-1 };
+  if(i<0){
+    hah.classList.add('corner_left');
+    i=null
+  }
+ }else
+ if(-1*l>wh.s){//next file OR not movie
+  if(dt.z){ dt.z=undefined; dt.b.mark = dt.zmark; i=dt.c } else { dt.b.mark = undefined; i = dt.c+1 };
+  if(i >= dt.b.DB.spine.length){
+    hah.classList.add('corner_right');
+    i=null
+  }
+ }
+ return i
+}
+/** whats <element> on current page?
+param h = 1 for push history & DB | h = -1 for replace history | h = 0 for no history&DB actions
+param d = true for exact update DB << only from onSrc()
+param l = for NO repit MARK as DB.last << from onSrc() call navMark(-1,true,dt.b.mark==undefined)
+return `marks` objectStore
+    { book: int primaryKey current open book
+    ,w:idth, h:eight ,a:mount_pages_on_file
+	,x: -int margin_left .... } */
+function navMark(h=0,d=false,l=true){
+ let s = {w:wh.w, h:wh.h, a:wh.a, x:wh.x, c:dt.c, z:dt.z, p:fot.read()};
+ if((h>0 || d) && l){
+  dt.b.DB.dat = Date.now();
+  dt.b.DB.last = {...s}
+  figFoot(dt.b);
+  if(db)upDate([dt.b]);
+  else if(dt.b.upId && !dt.b.notSetA)setChange([dt.b])
+ };
+ s.book=dt.b.DB.id || dt.b.id.slice(1);
+
+ if(h<0)history.replaceState(s,'');
+ if(h>0)history.pushState(s,'');
+ if(h==0){// get name & selected string for create "marks" from addMark()
+    s.id = Date.now();
+    getSel(s);
+    if(!s.name)s.name=dt.v.bm+' '+document.querySelectorAll('#marks li').length;
+ }cl('navMark() '+(h!=0?(h>0?'history.push':'history.replace'):''),s,' dt.b.DB.dat='+dt.b.DB.dat,' dt.b.DB.last=',dt.b.DB.last);
+ return s;
+}
+/** return selected string | ''
+param s = {} from navMark() for analize selection|range on current page */
+function getSel(s){
+ let r=fr.d.getSelection();
+ if(!r)return '';
+ if(!s)return r.toString();//cl('getSel()',r)
+ if(r.type=="Range"){
+    s.name=r.toString();
+    s.targ=dom(r.anchorNode.parentNode);
+    s.idx=r.anchorOffset
+ }else{
+    let e=[];
+    for(let i=10; i<wh.h; i=i+40){
+        e[i]=[fr.d.elementsFromPoint(30,i)[0]];
+        e[i].push(e[i][0].getBoundingClientRect());//cl('getSel() element & x=',e[i][0],e[i][1].x);
+        if(e[i][1].x>-1){//element starting on current page
+            let t=e[i][0].textContent;
+            if(t)s.name=t.trim().replace(/\n/g, " ").replace(/(([^\s]+\s\s*){5})(.*)/,"$1…");
+            else s.name=e[i][0].getAttribute('title') || e[i][0].getAttribute('alt');
+            s.targ=dom(e[i][0]);
+            s.idx=0;
+            return
+        }
+    }//cl('getSel() e[10]=',e[10])
+    let t=e[10][0].textContent;
+    if(e[10][1].right<wh.w){//element ending on current page
+        if(t){
+            t=t.trim().replace(/\n/g, " ");
+            t=t.slice(t.length-55).split(' ');
+            t.shift();
+            s.name='…'+t.slice(-5).join(' ')
+        }else s.name=e[10][0].getAttribute('title') || e[10][0].getAttribute('alt');
+        s.targ=dom(e[10][0]);
+        s.idx=-1;
+        return
+    }
+    if(t){//range inside textContent
+        let l=t.length-99;
+        let c=e[10][0].firstChild;
+        let a=fr.d.createRange();
+        for(let i=99; i<l; i=i+99){
+            a.setStart(c,i);
+            a.setEnd(c,i+99);
+            if(a.getBoundingClientRect().x>-1){
+                t=a.toString().split(' ');
+                t.shift();
+                t.pop();
+                s.name='…'+t.slice(0,5).join(' ')+'…';
+                s.targ=dom(e[10][0]);
+                s.idx=i;
+                return
+            }
+        }
+    }
+ }//cl('getSel() PATH=',s.targ,' TARG=',fr.d.querySelector(s.targ));
+}
+function dom(e){/** return string path in DOM-tree from <body> to element <e> == for future document.querySelector() */
+ if(e.tagName=='HTML')return 'HTML';
+ let p = '';
+ for( ; e && e.nodeType == 1; e = e.parentNode ){
+    if(e.tagName=='BODY')return 'BODY'+p;
+    let i=e.getAttribute('id');
+    if(i)return '#'+i+p;
+    i = [...e.parentNode.children].indexOf(e)+1;
+    p = ' *:nth-child('+i+')'+p
+ }
+ return p
+}
+/** fast set needed page for dt.b — NOT test on right book set == ONLY set marginLeft on current open file
+param e = {...} custom mark (object return navMark())
+- from onSrc() and goMark() & goHref() with dt.b.mark != undefined (!!!)
+= SET  dt.b.mark = undefined */
+function setPage(e={}){cl('setPage() dt.b.mark=',dt.b.mark);
+ if(!dt.b.mark){//==false from moveOver() — go previous file == on last page
+    e.p=100;
+    e.x=-1*(wh.a-1)*(wh.w+12);//new marginLeft for the last page number
+ }else{
+  if(Object.keys(e).length<1)e = typeof dt.b.mark === 'boolean' ? dt.b.DB.last : dt.b.mark;cl('setPage() e=',e,' dt.b=',[dt.b]);
+  if(e.x<0){
+    let p=e.x/(e.w+12);//old current page = -int
+    e.x=p*(wh.w+12);//new marginLeft for the same page number
+
+    if(e.w!=wh.w || e.h!=wh.h || e.a!=wh.a){// changed width-heigh-size\font-size\and other
+        if(e.targ)setTarg(e);
+    }
+  }else if(e.x==1)setTarg(e);// e.x=1 from goHref()
+ }
+ fot.set(e.p);
+ wh.x = e.x;
+ fr.s.marginLeft = e.x+'px';
+ dt.b.mark = undefined
+}
+/** setPage on target element
+param e = objectStore "mark" with:
+- e.targ = string|element on document :>example:> '#id' | <a href>
+= SET new e.x & e.p */
+function setTarg(e){//cl('setTarg('+e.targ+')');
+ if(!e.targ){e.x=0;e.p=0;return};
+ let t;
+ if(typeof e.targ === 'string')t=fr.d.querySelector(e.targ); else t=e.targ;
+ if(!t){e.x=0;e.p=0;return};
+ if(e.idx!=undefined){
+    let c=t.firstChild;
+    t=fr.d.createRange();
+    let i = e.idx<0 ? c.length-2 : e.idx;
+    t.setStart(c,i);
+    t.setEnd(c,i);
+ }
+ let p=Math.ceil((fr.d.body.getBoundingClientRect().x-t.getBoundingClientRect().x)/(wh.w+12))-1;//page number where targ|range
+ e.x=p*(wh.w+12);
+ e.p=p*-100/wh.a;cl('setTarg() new e.x=',e.x,p,e.p,t.getBoundingClientRect().x);
+}
+/** set if needed Book, File, Page
+click on BookMark (seted at addMark() or from search()) OR from window.addEventListener('popstate',goMark,false)
+= SET dt.b.mark ----> undef it on setPage()
+param e{} | e.state{} | e.target.DB{} = "marks" objectStore = the same of return navMark() */
+function goMark(e){cl('goMark()',e,'dt.c='+dt.c)
+ e=e.state?e.state:(e.target?e.target.DB:e);
+ if(dt.b && (e.book==dt.b.DB.id || e.book==dt.b.id || 'b'+e.book==dt.b.id)){// mark book already show
+    dt.b.mark = {...e};
+    if(e.c==dt.c || (e.z!=undefined && e.z==dt.z))setPage();// mark file already set
+    else{ if(e.z)zipFile(e.z); else setFile(e.c) };
+    sh.hid('MAIN','NAV','MENU')
+ }else{
+    let f = document.getElementById('b'+e.book);
+    if(f){
+        f.mark = {...e};
+        showBook(f)
+    }else{
+     db.transaction("books","readonly").objectStore("books")
+      .get(e.book).onsuccess = s=>{
+        if(s.target.result){
+            let o = document.createElement('figure');
+            o.DB=s.target.result;
+            o.id=o.DB.id;
+            o.AU={};
+            o.mark={...e};
+            prepFig(o)
+        }
+      }
+    }
+ }
+}
+/** click on <a href="..."> ( at <nav>.contentPage OR iframe.<html>) — settted on makeHTML(repTag()) */
+function goHref(e){//cl('goHref()');
+ e.preventDefault();
+ let h=e.target.getAttribute('href');
+ let a=e.target.getAttribute('alt');// 'targ' object into alt="#id" — set at repTag( if(tag=='a' || tag=='area'){...} )
+ dt.b.mark = {x:1,targ:a};
+ if(dt.z==h || dt.b.DB.spine[dt.c]==h){
+    setPage();
+    sh.hid('NAV','MENU')
+ }else{
+    let i = dt.b.DB.spine.indexOf(h);
+    if(i>-1)setFile(i)
+    else{ dt.zmark = {x:1,targ:e.target}; zipFile(h) }
+ }
+};
+/** *************************** Bisser ********************************* */
+const car=(e,k,c='dn')=>{ if(k)e.classList.add(c); else e.classList.remove(c); return k };
+const carr=(a,k,c='dn')=>{ a.forEach(e=>{ car(e,k,c) }); return k };
+dig.lal=dig.querySelector('label');
+dig.inp=dig.querySelector("input");
+dig.spa=dig.querySelector("span");
+dig.sel=dig.querySelector("select");
+dig.con=dig.querySelector('div[name="confirm"]');
+dig.can=dig.querySelector('div[name="cancel"]');
+/** resolve promise from dialog()
+return value = null | string | {} the same `o` from argument dialog(o) */
+dig.res=()=>{cl('dig.res() typeLog=',dig.typeLog,dig.inp.value)
+ r=null;k=true;
+ if(dig.typeLog==1)r='Y';
+ if(dig.typeLog>1){
+    let s=dig.inp.value.trim();
+    if(s){
+        r=s;
+        if(s==dig.txt){
+            if(dig.typeLog<3){
+                if(dig.arr.un){ if(dig.obj.DB)r=dig.obj }
+                else{if(dt.w)dig.inp.setAttribute('placeholder',dt.w.placeholder["input[required]"]);k=false}
+            }
+        }else if(dig.obj.DB){r=dig.obj;dig.obj.DB.name=s;if(dig.arr.re)dig.obj.reName=true}
+
+        if(dig.typeLog>2){//rename|merge `tags`
+            r=dig.obj;
+            let o=dig.sel.selectedOptions;
+            if(o.length>0)o=o[0].idTag; else o=0;
+            if(o!=dig.sop){
+                dig.obj.DB.pa=o;
+                if(o>0)dig.obj.under=tga.list.querySelector('option[value="'+o+'"]')
+                if(dig.arr.re)dig.obj.rePlace=true
+            }else if(!dig.arr.un && s==dig.txt)k=false
+        }
+    }else k=false;
+ }
+ if(k){
+    dig.close();
+    if(dig.typeLog>0)dig.resolve(r)
+ }
+}
+/** open and await dialog modal window
+param s without `o` = string for alert | label text under input field
+param o= {} | 0 | string
+    o = 0 for confirm YES|NO with text `s`
+    o = string is value for prompt input
+    o = {DB:{name:'string'}} | <option> where o.DB.name = value for prompt input field
+param a={} adding options
+    a.re = true if set reName|rePlace properties to `o`
+    a.un = true if can stay the same text into input field
+param ex = [] excludes key's from merPT() for treeChilds()
+param tp = key for treeParent from elect
+examples:
+`alert(text)` — if(!x){dialog('Fuck them all');return} <<== dialog=message without await with only [OK] button
+`confirm Y|N` — dialog('Make It?',0).then( v=>{console.log('YES choise',v)}, r=>{console.log('NO choise',r)} )
+`prompt(text)` — dialog('Input please','old text').then(r=>{ console.log('new text='+r) })
+`prompt(object text)` — let o={DB:{name:'old text'}}; dialog('Rename please',o,{re:true}).then(o=>{...o.DB.name setted in 'new text' & o.reName setted in true...})
+ */
+function dialog(s,o,a={},ex,tp){cl('DIALOG',o,a,ex,tp)
+ dig.typeLog=0;
+ dig.lal.innerHTML=s;
+ dig.inp.value='';
+ dig.arr=a;
+
+ if(o==0){
+    dig.typeLog=1;
+    dig.con.textContent='💬👍';dig.can.textContent='💬👎';
+ }else{ dig.con.textContent='💬🆗';dig.can.textContent='💬✖️' }
+
+ if(o && (o.DB || typeof o === 'string')){
+    if(o.DB){dig.txt=o.DB.name;dig.obj=o}else{dig.txt=o;dig.obj={}}
+    dig.typeLog=2;
+    dig.inp.classList.remove('dn');
+    dig.inp.value=dig.txt;
+    if(o.name=="tags"){//edit|merge `tags`
+        if(!dig.opt)dig3();
+        dig.typeLog=3;
+        dig.sel.textContent='';
+        dig.sop=o.DB.pa;
+        let k=1,c=1;
+        dig.opt.selected=false;
+        treeChilds(tga,o,(i)=>{
+            c=0;
+            let n=i.cloneNode();
+            n.idTag=i.DB.id;
+            n.textContent=i.style.getPropertyValue('--mark-before').slice(1,-1)+i.textContent;
+            car(n,0,'ownl');
+            dig.sel.appendChild(n);
+            if(i.DB.id==dig.sop || i.DB.id==tp){n.selected=true;k=0;cl('DIA selected=',i.DB.id)}
+        },0,0,ex);
+        if(!carr([dig.sel,dig.spa],c)){
+            dig.sel.prepend(dig.opt);
+            if(car(dig.sel,k,'diasel'))dig.opt.selected=true
+        }
+    }else carr([dig.sel,dig.spa],1)
+ }else carr([dig.inp,dig.sel,dig.spa],1);
+
+ if(dig.typeLog==0)dig.can.style.display='none';else dig.can.style.display='inline-block';
+ dig.showModal()
+ if(dig.typeLog>0)return new Promise((resolve,reject) => {
+  dig.resolve=resolve;
+  dig.reject=reject;
+ })
+};
+fot.progress=0;
+fot.set = (i)=>{//draw progress line
+ if(i>100)i=100;
+ fot.progress=i;//cl('fot.set',i);
+ fot.style.background='linear-gradient(to right, var(--p) '+i+'%, transparent '+i+'%';
+};
+fot.file = ()=>{//set progress on current open file
+ fot.set(-100*wh.x/(wh.s-wh.w-12))
+};
+fot.book = (t)=>{//draw bump for every file into book
+ //cl('fot.book('+t+') dt.c='+dt.c+' child='+fot.hasChildNodes()+'=',dt.b.prs)
+ if(!dt.b.prs)return;
+ let w = fot.clientWidth;
+ if(fot.hasChildNodes()){
+    fot.childNodes.forEach((d,i) => {
+        d.style.backgroundColor='var(--bump-'+(i>dt.c?'not':'yes')+')';
+        if(i==dt.c)d.style.borderRight='2px solid var(--bump-not)';
+        else d.style.borderRight='none';
+        if(t=='S')d.style.left=(w*dt.b.prs[i]/100)+'px'
+    })
+ }else{
+    dt.b.prs.forEach((p,i) => {
+     fot.insertAdjacentHTML('beforeend', '<div style="left:'+(w*p/100)+'px;border-right:'+(i==dt.c ? '2px solid var(--bump-not)' : 'none')+';background-color:var(--bump-'+(i>dt.c?'not':'yes')+')" class="bump"></div>');
+    });
+ }
+};
+fot.read = ()=>{//return percent readed throw all files into book
+ if(!dt.b.prs || dt.z)return fot.progress;
+ else{
+    let c = dt.c+2 > dt.b.prs.length ? 100 : dt.b.prs[dt.c+1];
+    return dt.b.prs[dt.c] + fot.progress * (c-dt.b.prs[dt.c]) / 100;
+ }
+};
+fot.To = function(pf,o){
+ var b = fot.progress;
+ var a = (typeof pf === 'string')
+  ? ( ((100-b) * o.ZIP.files[pf]._data.compressedSize / o.DB.raw.byteLength - b) / 100 )
+  : ( (pf - b) / 100 );
+ this.set = (m)=>{ fot.set(a * m.percent + b) }
+};
+sh.o={};
+sh.o.IFRAME=ifr.classList;
+sh.o.MAIN=man.classList;
+sh.o.NAV=nav.classList;
+sh.o.MENU=mnu.classList;
+sh.o.SEN=sen.classList;
+sh.isRead = ()=>{// return true when <iframe> NOT covered <main> or <section>
+ return !sh.MAIN && !sh.SECTION
+};
+sh.hid = (...ts)=>{// IFRAME MAIN NAV MENU SEN EBK
+ ts.forEach((t) => {if(sh.o[t])sh.o[t].add('hide')});
+};
+sh.up = (t)=>{// IFRAME MAIN
+ if(t=='MAIN')cleMan();
+ sh.o[t].remove('hide');
+};
+sh.tog = (u,h)=>{//cl('sh.tog('+u+','+h+')');// MAIN NAV MENU
+ if(u=='ArrowUp'){sh.tog('MAIN','NAV');return}
+ if(sh.SECTION || !ifr.src)return;
+ if(h && !sh[u])sh.o[h].add('hide');
+ if(u=='MAIN' && !sh[u]){sh.o['MENU'].remove('hide');cleMan()}
+ sh.o[u].toggle('hide');
+};
+sh.togNM = ()=>{// for NAV + MENU
+ if(sh.SECTION || !ifr.src)return;cl('sh.togNM() ',sh);
+ if(nav.classList.contains('dn')){
+    mnu.classList.toggle('hide')
+ }else if(sh.NAV && sh.MENU)carr([nav,mnu],1,'hide');
+    else{
+        man.classList.add('hide');
+        carr([nav,mnu],0,'hide')
+    }
+}
+function cleMan(){
+ rad.querySelectorAll("figure").forEach(i=>{ i.style.boxShadow='none' })
+}
+function loadScript(doc,src,cbk){
+ let t = doc.createElement('script');
+ if(cbk)t.onload = cbk;
+ t.src = src;
+ doc.head.appendChild(t);
+}
+function fix(n,f=0){
+    return +n.toFixed(f);
+}
+/** <span id="msg"></span> == set inner html & time for messaging
+param s = new message-string | '' for clear now (if present t - clear only keeped timestamp)
+param t = milisec for timeout before auto clear | null without autoclear
+return timestamp then set not null message */
+function setMsg(s,t){
+ if(this.v || (!s && t)){console.log('setMsg() CLEAR',this.v,t,msg.ebookTimeStamp,s);
+  if(msg.ebookTimeStamp==(this.v || t))msg.innerHTML=''
+ }else{
+  const d=Date.now();cl('setMsg() SET',s,t,d);
+  msg.innerHTML=s;
+  msg.ebookTimeStamp=d;
+  if(t)setTimeout(setMsg.bind({v:d}), t);
+  return d;
+ }
+};
+/** check 4symbols at end of string
+param s = string for analize
+param t = type file for search = 'html' | 'img' | 'css' */
+const htE=['.htm','html'];
+const imE=['.jpg','jpeg','.png','apng','.gif','.svg','avif','jfif','.pjp','webp'];
+function checkExt(s,t){
+ let e=s.slice(s.length - 4);
+  (t=='html' && htE.includes(e)) ? e=true
+ : (t=='img' && imE.includes(e)) ? e=true
+ : (t=='css' && e=='.css') ? e=true
+ : e=false;
+ return e
+}
+/** Set style of Interface
+param a = {}
+	a.id = "l" | "w" or other styled key
+	a.val = value for set
+param e = <element>
+param k = false when NOT needed run function setValue() // from ebook.set.js
+*/
+function setStyle(a,e,k=true){cl('setStyle',a.id,'=',a.val)
+  switch(a.id){
+   case "l":
+	 setLang(a.val);
+	 break;
+   case "w":
+	 dt.r.setProperty('--'+a.id,a.val);
+	 reSume();
+	 break;
+   default:// "c", "b"
+	 dt.r.setProperty('--'+a.id,a.val);
+	 if(fr.r)fr.r.cssRules[0].style.setProperty('--'+a.id,a.val);
+	 break;
+  }
+  if(k && window.setValue)setValue(a.id,a.val);
+}
+function setStyleDay(k){
+  setStyle({id:k,val:dt.r.getPropertyValue('--'+k+'-day')},null,false);
+}
+/** set & go to fetch Language */
+function setLang(l){//cl('setLang('+l+')',dt.v)
+ if(!l || l=='_'){
+  document.documentElement.removeAttribute("lang");
+  l = (navigator.language || navigator.userLanguage).slice(0,2).toLowerCase();
+ }else{
+  document.documentElement.setAttribute("lang",l)
+ }
+ if(!dt.v || dt.v.l_!=l)fetchLang('ebook.','v',l);
+ if(dt.w && dt.w.l_!=l)fetchLang('ebook.set.','w',l)
+}
+/** fetch {name}{l}.json and save response to dt[{v}] and run querySelector */
+function fetchLang(name,v,l){
+ fetch(name+l+'.json')
+ .then(r => {if(r.ok)return r.json();
+	else return fetch(name+'en.json')
+		.then(n => {if(n.ok)return n.json(); else return null}) })
+ .then(d => {
+  dt[v]=d;
+  dt[v].l_=l;cl('DT['+v+']',dt[v]);
+  if(d){
+   for(let i in d['title']){ document.querySelector(i).title=d['title'][i] };
+   for(let i in d['text']){ document.querySelector(i).textContent=d['text'][i] };
+   for(let i in d['placeholder']){ document.querySelector(i).setAttribute('placeholder',d['placeholder'][i]) };
+  }
+ });
+}
+/** fetch additional setting html
+param s = <section> sen|ebk OR = null with `eb` only from ediObj( fetchSet(null,book_element_figure)  ) */
+function fetchSet(s,eb){
+ if(s){
+    if(s instanceof Event)s=s.target.parentNode;
+    if(s.classList.contains('hide'))secs.forEach(i => { if(i!=s){i.cloSet(); i.classList.add('hide')} });
+    else s.cloSet();
+    s.classList.toggle('hide')
+ }
+ if(!dt.w){
+  fetch('ebook.set.html')
+  .then(r => {if(r.ok)return r.text(); else return 'Not found ebook.set.html'})
+  .then(t => {
+    let d=t.split('<!--#-#-->');
+	sen.insertAdjacentHTML('beforeend',d[0]);
+
+    ebk=document.createElement('section');
+    ebk.setAttribute('id','ebk');
+    ebk.classList.add('hide','theme','edit','with_db');
+    ebk.addEventListener('transitionend',sh.set);
+    secs.push(ebk);
+    sh.o.EBK=ebk.classList;
+    let b = document.createElement('div');
+    b.textContent='🔠✖️';
+    b.classList.add('btn');
+    ebk.append(b);
+    ebk.insertAdjacentHTML('beforeend',d[1]);
+    document.body.append(ebk);
+
+    pip=document.createElement('div');
+    pip.setAttribute('id','pip');
+    pip.insertAdjacentHTML('beforeend',d[2]);
+    tga=document.createElement('div');
+    tga.setAttribute('id','tag');
+    tga.insertAdjacentHTML('beforeend',d[2]);
+
+	fetchLang('ebook.set.','w',dt.v.l_);
+
+	let f = function(){b.onclick=savEbk;setValues();if(s==null){ebk.book=eb;filEbk();ebk.classList.remove('hide')}};
+	loadScript(document,'ebook.set.js',f);
+  });
+ }
+};
+sen.cloSet=()=>{
+ if(dt.w){
+    document.querySelector('#set_pips').removeAttribute('open');
+    document.querySelector('#set_tags').removeAttribute('open')
+ }
+ seaCl()
+};
+const secs = [sen];
+function nul(){};
+/** ********************** Get & Unzip File *************************** */
+const txt = [
+ 'text/html'
+,'text/plain'
+,'application/json'
+,'application/xhtml+xml'
+,'text/xml'
+,'text/markdown'
+];
+const pub = [
+ 'application/epub+zip'
+,'application/octet-stream'
+,'application/zip'
+];
+function met(m){
+ return {
+  method:m,
+  headers:[
+	["Content-Type","application/x-www-form-urlencoded"],
+	["Content-Type","multipart/form-data"],
+	["Content-Type","text/plain"]
+  ],
+  mode:'no-cors',
+  credentials:"include"
+ }
+}
+/** open global file
+param u = string uri link to file | null for prompt
+ - from window.location.search
+ - from <div id="gf" class="btn" onclick="globalFile()"
+ - from dropHand() */
+function globalFile(u){
+ if(!u)dialog(dt.v.u,"http://").then(globalFetch,nul);
+ else globalFetch(u)
+}
+function globalFetch(u){cl('globalFetch()',u);
+ fetch(u, met('HEAD')).then(h => {
+  if(h.ok){//for(var [key, value] of h.headers){cl(`${key} = ${value}`)}
+	let t=h.headers.get('content-type');//cl('globalFile() OK',t)
+	if(txt.includes(t)){
+        let nam=filename(u);
+        let fig = document.createElement("figure");//addFigObject
+        fig.DB={src:u,type:'web',spine:[nam]};// make nav:'<ol></ol>'
+        fig.AU={[nam]:u};
+        addBook(fig)
+	}else{
+	 if(pub.includes(t)){
+let tim=0;
+let len = h.headers.get(h.headers.get('content-encoding')?'x-file-size':'content-length');
+let tot = len?parseInt(len,10):null;
+		if(tot){
+		 dt.r.setProperty('--foot','4px');
+		 len=0;tim=setMsg(dt.v.fh);fot.set(10)
+		}
+		fetch(u, met('GET')).then(r => r.body).then(rb => {
+		 const rd = rb.getReader();
+		 return new ReadableStream({
+		  start(controller){
+			function push(){
+			 rd.read().then( ({done,value}) => {
+				if(done){
+				 controller.close();
+				 setMsg('',tim);
+                 fot.set(0);
+				 return;
+				}
+				len += value.byteLength;//cl('CHUNK',len,done,value);
+				if(tot)fot.set(len/tot*90);
+				controller.enqueue(value);
+				push()
+			 })
+			}
+			push()
+		  }
+		 })
+		})
+		.then(stm => {return new Response(stm)})
+		.then(res => res.arrayBuffer())
+		.then(buf => { let fig = document.createElement("figure");//addFigObject
+                        fig.DB={src:u};
+                        unZip.call(fig,buf) })
+		.catch(err => console.error('globalFetch() ERROR',err))
+	 }else{
+        hah.classList.add('smile')
+	 }
+	}
+  }else globalErr(h,u)
+ }).catch(err => console.error('globalFetch() ERROR',err))
+}
+function globalErr(r,u){//cl('globalErr()',r)
+ if(r.status==404)setMsg(r.statusText+'<br>'+r.url, 2000);
+ else{
+  setMsg(dt.v.ef,50000);
+  document.querySelector("#msg a").setAttribute("href",u);
+  document.querySelector("#msg b").setAttribute("onclick","lof.click()")
+ }
+}
+/** open local file
+param f = File
+ - from <input type="file" id="local_file" onchange="if(this.files.length>0)localFile(this.files[0])">
+ - from dropHand(e) */
+function localFile(f){cl('localFile(f)',f.name,f.type,f)
+ let l;
+ if(txt.includes(f.type)){
+  l = (a)=>{
+    let fig = document.createElement("figure");//addFigObject
+    fig.DB={src:f.name,type:'text',raw:a.target.result,spine:[f.name]};// make nav:'<ol></ol>'
+    fig.AU={[f.name]:URL.createObjectURL(f)};
+    addBook(fig)
+  }
+ }else{
+  if(pub.includes(f.type)){
+    let fig = document.createElement("figure");//addFigObject
+    fig.DB={src:f.name};
+	l=unZip.bind(fig);
+  }else{
+	hah.classList.add('smile');
+    return
+  }
+ }
+ let r = new FileReader();
+ r.onload=l;
+ r.readAsArrayBuffer(f);
+}
+/** unzip after open local\global file
+this = addFigObject{} with along this.DB.src = name local zip-file | global url to zip-file
+param a = ArrayBuffer from globalFile() OR Event from localFile()
+- fill addFigObject{} and forward it to epub() | html() */
+function unZip(a){cl('unZip()',this.DB.src)
+ if(a instanceof Event)a=a.target.result;
+
+ let zip = new JSZip();
+ this.m=setMsg(dt.v.uz);fot.set(0);
+
+ zip.loadAsync(a)
+ .then(z => {//cl("unZip() ZIP.files = ",z.files);
+    dt.r.setProperty('--foot','4px');fot.set(11);
+    this.ZIP=z;this.DB.raw=a;
+	this.DB.spine=[];this.AU={};this.d='META-INF/container.xml';
+
+	z.files[this.d] ? epub(this)
+	: z.files[(this.d='')+'index.html'] ? html(this)
+	: z.files[(this.d = Object.keys(z.files)[0])+'index.html'] ? html(this)
+	: setMsg(dt.v.ns,2000)
+
+ },e => {
+	setMsg(e.message+'<br>unZip('+this.f+')',2000);
+ })
+}
+/** *********************** Create Book ******************************* */
+/** create small image for cover */
+function cover(o,f,cb,k){//cl('COVER',o,f);
+ let c = document.createElement('canvas');
+ let ctx = c.getContext('2d');
+ let img = new Image();
+ img.onload = function() {
+  c.width=c.height=1;
+  ctx.drawImage(img, 0, 0, 1, 1);
+  const i = ctx.getImageData(0, 0, 1, 1).data;
+  ctx.imageSmoothingQuality = "high";
+  ctx.imageSmoothingEnabled = true;
+  let w=120,h=120;
+  if(this.naturalWidth > this.naturalHeight) h=w*this.naturalHeight/this.naturalWidth;
+  else w=h*this.naturalWidth/this.naturalHeight;
+  c.width=w;
+  c.height=h;
+  ctx.drawImage(img, 0, 0, w, h);
+  c.toBlob(b=>{
+	o.DB.cover=b;
+    o.DB.color=i;
+	if(cb)cb(o,f,k)
+  })
+ };
+ if(f){
+  let to = new fot.To(96);
+  o.ZIP.file(f).async("blob", m => {to.set(m)}).then(a => {
+	let u = URL.createObjectURL(a);
+	o.AU["imgC"+f] = 'imgC'+u;
+	img.src = u
+  })
+ }else img.src=k//only from preCov()
+}
+/** get index.html & cover.jpg from zip
+ o = addFigObject{} where o.d = directory with index.html into zip-file | '' */
+function html(o){
+ o.DB.type='html';console.log('html()',o);
+ let cb = function(o){
+  let f=o.d+'index.html';
+  o.DB.spine.push(f);
+  let to = new fot.To(100);
+  o.ZIP.file(f).async("string",m => {to.set(m)}).then(a => {
+	o.AU[f] = a;
+	o.DB.title=[tag(a,"title")];// make nav:'<ol></ol>' throw makeHTML() — set link inside zip
+	addBook(o)
+  })
+ };
+ let c = Object.keys(o.ZIP.files).find(s => {
+	return s.slice(0+o.d.length,5+o.d.length)=='cover'
+ });
+ if(c){
+  o.DB.spine.push("imgC"+o.d+c);
+  cover(o,o.d+c,cb);
+ }else cb(o)
+}
+/** get spine, contents & cover from epub
+param o = addFigObject{} where o.d = string 'META-INF/container.xml' */
+function epub(o){console.log('epub()',o);
+ o.DB.type='epub';
+ let to = new fot.To(o.d,o);
+ o.ZIP.file(o.d).async("string", m => {to.set(m)}).then(a => {
+  let r = tag(tag(a,'<rootfile','/>'),'full-path="','"');
+  let rd = path(r);
+  let tu = new fot.To(r,o);
+  o.ZIP.file(r).async("string", m => {tu.set(m)}).then(p => {
+    let x = new DOMParser().parseFromString(
+        p.replace(/^\s+|\s+$/g, '')
+        .replaceAll('dc:title','dc_title').replaceAll('dc:creator','dc_creator')
+        .replaceAll('dc:subject','dc_subject').replaceAll('opf:role','role').replaceAll('p6:role','role')
+    , "text/xml");
+    dt.b=undefined;
+// fill DB.title //
+    o.DB.title=[];
+    let it = [];
+    x.querySelectorAll('meta[property="title-type"]')
+     .forEach(i => { let tc = i.textContent, ar = i.getAttribute('refines').slice(1);
+        if(tc=='main'){it.push(ar);o.DB.title.unshift(x.querySelector('dc_title[id="'+ar+'"]').textContent)
+        }else if(tc=='subtitle'){it.push(ar);o.DB.title.push(x.querySelector('dc_title[id="'+ar+'"]').textContent)}
+     });
+    x.querySelectorAll('dc_title' + (it.length>0 ? ':not([id="'+it.join('"]):not([id="')+'"])' : ''))
+     .forEach(i => {o.DB.title.push(i.textContent)});
+
+// fill o.auth name's for future DB.auth id's //
+    o.auth=[];
+    x.querySelectorAll('meta[property="role"][scheme="marc:relators"]')
+     .forEach(i => { if(i.textContent=='aut')o.auth.push(x.querySelector('dc_creator[id="'+i.getAttribute('refines').slice(1)+'"]').textContent) });
+
+    if(o.auth.length<1)x.querySelectorAll('dc_creator[role="aut"]').forEach(i => { o.auth.push(i.textContent) });
+    if(o.auth.length<1)x.querySelectorAll('dc_creator').forEach(i => { o.auth.push(i.textContent) });
+
+// fill o.tag for future DB.tag //
+    o.tag=[];
+    x.querySelectorAll('dc_subject').forEach(i => { o.tag.push(i.textContent) });
+
+// fill DB.spine //
+    let cp = true;//for cover-page
+    let s = x.querySelector('spine');
+    s.querySelectorAll('itemref').forEach(i => {
+        let g = i.getAttribute('idref');
+        if(g.startsWith('cover') || g.startsWith('titlepage'))cp=false;
+        let e = x.querySelector('manifest item[id="'+g+'"]');
+        if(e)o.DB.spine.push(decodeURIComponent(rd+e.getAttribute('href')));
+    });
+// fill DB.nav //
+    let n = x.querySelector('manifest item[properties="nav"]');//epub3 content page
+    if(n)epubNav(o,true,n,rd);
+    else{
+        n = x.querySelector('manifest item[id="ncx"]');//epub2 ncx
+        if(n)epubNav(o,false,n,rd);
+        else{
+            n = s.getAttribute('toc');//ncx then epub from fb2
+            n = x.querySelector('manifest item[id="'+n+'"]');
+            if(n)epubNav(o,false,n,rd)
+        }
+    };
+// fill DB.cover //
+    n = x.querySelector('manifest item[properties="cover-image"]');//epub3 cover
+    if(!n)n = x.querySelector('manifest item[id*="cover"][media-type*="image/"]');//epub2 cover
+    if(n)
+        cover(o,rd+n.getAttribute('href')
+        ,(o,f,k)=>{ if(k){o.DB.spine.unshift("imgC"+f)}; addBook(o) }
+        ,cp);
+    else addBook(o)
+  })
+ })
+}
+/** make Content Page for epub
+param o = addFigObject{}
+param t = type of file = true for epub3 nav | = false for epub2 ncx
+param n = item with attribute `href` with file name
+param d = root directory */
+function epubNav(o,t,n,d){
+ let f = d+n.getAttribute('href');
+ let to = new fot.To(f,o);
+ o.ZIP.file(f).async("string", m => {to.set(m)}).then(v => {
+    let x = new DOMParser().parseFromString(v.replace(/^\s+|\s+$/g, '').replaceAll('navPoint','ol'), "text/xml");
+    if(t){
+        return makeHTML(o,f,x.querySelector('nav[id="toc"]').innerHTML.trim());
+    }else{
+        let tree = function(ee) {
+            let ct = ee.getElementsByTagName('content')[0];
+            let nl = ee.getElementsByTagName('navLabel')[0];
+            let li = document.createElement("li");
+            let ah = document.createElement("a");
+            ah.setAttribute('href',ct.getAttribute('src'));
+            ah.textContent = nl.getElementsByTagName('text')[0].textContent;
+            li.appendChild(ah);
+            ee.insertBefore(li, ee.firstChild);
+            ct.remove();
+            nl.remove();
+            [...ee.children].filter(e => e.matches('ol')).forEach(i => { tree(i) });
+        };
+        let e = x.querySelector('navMap > ol');
+        tree(e);
+        return makeHTML(o,f,e.outerHTML.trim())
+    }
+ }).then(v => {
+    o.DB.nav = v;
+    if(dt.b!=undefined)nav.insertAdjacentHTML('beforeend',v);
+ })
+}
+/** show book & add figure
+param o = addFigObject{} - from localFile(), globalFile(), html(), epub() */
+function addBook(o){cl('addBook()',o);
+ setMsg('',o.m);
+ o.id = 'b'+( 0 - document.querySelectorAll("main article#read figure").length - 1);
+ o.upId = true;
+ prepFig(o)
+}
+function prepFig(o){// from addBook() & goMark()
+ o.name="books";
+ o.setAttribute('name','books');
+ o.setIdObj = ["pipls","tags"];
+ o.setIdName = ['auth','tag'];
+ rad.prepend(o);
+ showBook(o)
+}
+/** add item <figure> to <main><article id="read">
+param ob = object "books" from DB run setA() on start session with DB <<<=== dt.b=undefined
+param el = <figure> from set1() <== el.reName=true for rename <figcaption>
+- OR throw addBook(showBook(setSrc()))...onSrc(navMark()) => if(db){ upDate(set1( addFig(ob) )) }else{ setChange( addFig(ob) ) }  <<<=== dt.b=<figure> - set at addBook() */
+function addFig(ob,el){console.log('addFig() ob=',ob,' el=',el,' dt.b=',dt.b)
+/* if(el && el.isHere){//from setA(setC())
+   let k=el.isHere[1].indexOf(ob.id);
+   if(k>-1)el=el.isHere[0][k]; else el=document.querySelector('#b'+ob.id)
+};*/
+ if(el && el.reName){//go from ebook.set.js / savEbk()|merPT()
+    let ca,f=el.footer;
+    if(!f)ca=el.querySelector('figcaption');
+    else ca=f.parentNode;
+    ca.textContent='';
+    figCap(el,ca);
+    ca.append(f);
+    if(ob.cover){
+        ebk.imgOwn.src=el.cover.src=URL.createObjectURL(ob.cover);
+        el.cover.style.setProperty("--covcol","rgba("+ob.color[0]+","+ob.color[1]+","+ob.color[2]+")");
+        el.cover.onload=ppp.cov
+    };
+    el.notSetA=true;
+    el.reName=undefined
+    ebk.cover=null;
+    ebk.imgNew.src='';
+    ebk.cleCov.classList.add('dn');
+    ebk.savIs=false;
+    ebk.savBut.setAttribute('disabled','disabled');
+    return
+ };
+ let fig;
+ let img = document.createElement("img");
+ let cap = document.createElement("figcaption");
+ if(dt.b && !el.new){// from addBook()
+    fig=dt.b;
+    titFigCap(fig,cap)
+ }else{// on start session with DB | from search(addSea( addFig(book,{new:true}) ))
+    fig = document.createElement("figure");
+    rad.append(fig);
+    fig.id='b'+ob.id;
+    fig.name="books";
+    fig.setAttribute('name','books');
+    fig.DB=ob;
+    fig.AU={};
+    figCap(fig,cap)
+ };
+ let pd = document.createElement("footer");
+ fig.footer=pd;
+ cap.append(pd);
+ if(fig.DB.dat)figFoot(fig);
+
+ fig.notSetA=true;
+ if(db)fig.notChange=true;
+
+ fig.cover=img;
+ fig.ppp=ppp.clon();
+ fig.append(img,cap,fig.ppp);
+ if(fig.DB.cover){
+    img.src=URL.createObjectURL(fig.DB.cover);
+    img.style.setProperty("--covcol","rgba("+fig.DB.color[0]+","+fig.DB.color[1]+","+fig.DB.color[2]+")");
+    img.onload=ppp.cov
+ }else img.src=dimg();
+
+ img.setAttribute('onclick','this.parentElement.mark=undefined;showBook(this.parentElement)');
+ cap.setAttribute('onclick','this.parentElement.mark=true;showBook(this.parentElement)');
+ return fig
+}
+function figFoot(f){if(f.footer)f.footer.textContent=fix(f.DB.last.p,2)+'% '+new Date(f.DB.dat).toLocaleString()}
+function figCap(fig,cap){
+ let o=["pipls","tags"];
+ getFigCap(fig,cap,db.transaction(o,"readonly"),-1,['auth','tag'],o,[getFigCap,titFigCap])
+};
+/** from [id,id...] make [name,name,...] */
+async function getFigCap(f,c,t,x,arr,obj,fun,l=0){
+ x++;
+ if(f.DB[arr[x]] && (l = f.DB[arr[x]].length) > 0){cl('getFigCap()',f.DB.title[0],f.DB[arr[x]])
+    f[arr[x]] = new Array(l);
+    let o = t.objectStore(obj[x]);
+    await Promise.all(f.DB[arr[x]].map((id,i)=>{
+        return new Promise((resolve)=>{
+            o.get(id).onsuccess = e=>{ f[arr[x]][i]=e.target.result.name; resolve(1) }
+        })
+    }));
+    fun[x](f,c,t,x,arr,obj,fun)
+ }else fun[x](f,c,t,x,arr,obj,fun)
+}
+/** from fig.DB.title, fig.auth, fig.tag fill figcaption */
+function titFigCap(f,c){cl('titFigCap() ',f.DB.title)
+ let s='';
+ if(f.tag && f.tag.length>0){
+    f.tag.forEach((t,i)=>{s=s+' <span'+( f.DB.tag ? ' name="tag'+f.DB.tag[i]+'"':'' )+'>'+t+'</span>'});
+    c.insertAdjacentHTML('afterbegin',s)
+ };
+ s='';
+ if(f.DB.title && f.DB.title.length>0){
+    f.DB.title.forEach((t,i) => { i++;
+        s=s+'<h'+i+'>'+t+'</h'+i+'>';
+    });
+ }else s='<h1>'+f.DB.src+'</h1>';
+ c.insertAdjacentHTML('afterbegin',s);
+ s='';
+ if(f.auth && f.auth.length>0){
+    f.auth.forEach((a,i)=>{s=s+' <span'+( f.DB.auth ? ' name="auth'+f.DB.auth[i]+'"':'')+'>'+a+'</span>'});
+    c.insertAdjacentHTML('afterbegin','<header>'+s+'</header>')
+ };
+ ppp.col(f)
+};
+ppp.figSet=new Set();
+ppp.cov=e=>{ppp.col(e.target.parentNode)};
+ppp.col=f=>{//from titFigCap() and <figure>.img.onload() togather
+ if(f.DB.color){
+  if(ppp.figSet.has(f.DB.id)){
+    if(f.ppp.offsetTop+f.ppp.offsetHeight/3 < f.cover.offsetHeight){//cl('ppp.col()',f.DB.title[0])
+        if(0.299 * f.DB.color[0] + 0.587 * f.DB.color[1] + 0.114 * f.DB.color[2] > 60){
+            f.ppp.style.color='var(--b-night)';
+            f.ppp.style.textShadow='-2px -2px 3px gray'
+        }
+    };
+    ppp.figSet.delete(f.DB.id)
+  }else ppp.figSet.add(f.DB.id)
+ }
+}
+/** create|show bookmarks == function from dbf[{name:"marks"},...]
+param ob = objectStore `marks` from DB
+param el = <li>-item-mark
+>>> CALL
+create new mark without DB:
+    click on icon "Create Bookmark (Alt+R)" >>> addMark(undefined,undefined)
+    goto setChange() AND second call >>> addMark(ob,el)
+create new mark with DB:
+    click on icon "Create Bookmark (Alt+R)" >>> addMark(undefined,undefined)
+    goto setChange() AND second call after upDate()—>set1() >>> addMark(ob,el)
+rename mark ediObj()—>upDate()—>set1() >>> addMark(ob,el) where el.reName=true
+show all marks at showBook()—>setC() >>> addMark(ob,{DB:undefined,reName:undefined})
+create DB during the session openDB()—>setA():
+    OR set1() then along mark >>> addMark(ob,el)
+    OR setC() then many marks >>> addMark(ob,{isHere:[[els],[keys]]}) */
+function addMark(ob,el){cl('addMark()',ob,[el]);
+ if(!ob){//new mark
+    ob=navMark();
+    dialog(dt.v.cm,ob.name,{un:true}).then(n=>{cl('addMark() ',n)
+        ob.name=n;
+        el=creMark(ob);
+        el.DB=ob;
+        setChange([el])
+    },nul);
+    return
+ };
+ if(el && el.reName){//renamed mark
+    el.reName=undefined;
+    titMark(el,ob);
+    return
+ };
+/* if(el && el.isHere){
+    let k=el.isHere[1].indexOf(ob.id);
+    if(k>-1)el=el.isHere[0][k]; else el=document.querySelector('#m'+ob.id)
+};*/
+ if(!el || !el.DB)el=creMark(ob);
+ else el.setAttribute('alt','b'+ob.book);
+
+ let m=document.getElementById('marks');
+ if(!m){
+    m = document.createElement('ol');
+    m.setAttribute('id','marks');
+    car(m,1);
+    nav.prepend(m);
+    nav.insertAdjacentHTML('afterbegin','<h1 onclick="detUp(document.getElementById(\'marks\'),this)" class="details_open close">'+dt.v.bm+'</h1>');
+ }
+ el.DB=ob;
+ titMark(el,ob);
+ m.append(el)
+}
+function creMark(o){cl('creMark() o=',o)
+ e = document.createElement('li');
+ e.name='marks';
+ e.setAttribute('id','m'+o.id);
+ e.setAttribute('alt','b'+o.book);
+ return e;
+}
+function titMark(m,o){
+    m.innerHTML='<i>'+fix(o.p,2)+'%</i><span onclick="goMark(this.parentNode.DB)">'+o.name+'</span>';
+    m.append(ppp.clon())
+}
+/** click on 📝 == books, marks, pipls, tags */
+function ediObj(e){cl('ediObj() e=',e)
+ if(!e){dialog(dt.v.sl);return}
+ if(!e.DB)return;
+ if(e.tagName=="FIGURE"){
+    if(ebk){ebk.book=e;filEbk()}
+    fetchSet(ebk,e);
+ }else{
+    dialog(dt.v.em,e,{re:true}).then(o=>{//console.log('RENAME o=',o,' DB=',o.DB,' o.reName=',o.reName,' o.rePlace=',o.rePlace,' o.under=',o.under);
+        upDate([o])
+    },nul)
+ }
+}
+/** *********************** Search ******************************* */
+function detUp(e,t){
+ e.classList.toggle('dn');
+ t.classList.toggle('close')
+}
+function seaUp(k,t,a,b,c,d){cl('seaUp('+k+')',t,a,b)
+ if(t.classList.contains('close')){
+    seaCl();
+    if(k)filAG(a,b,c,d);
+    else{search(a);sea.pre_search=a}
+ }
+ if(!k && sea.pre_search!=a)search(a);
+ else detUp(sea.list,t)
+}
+function seaIs(e,t,c){
+ let s= t ? e.parentNode.children[1].value.trim() : e.value.trim();
+ if(s!='')seaUp(false,( c ? e : e.parentNode.children[0] ),s)
+}
+function seaCl(){
+ sea.divs.forEach(i=>{ if(!i.classList.contains('close'))detUp(sea.list,i) })
+};
+sea.divs=sea.querySelectorAll(".details_open");
+sea.input=sea.querySelector("input");
+sea.list=sea.querySelector("ul");
+sea.book=-1;
+sea.tit='li';
+sea.func=(r,e)=>{//result getAll("books") & <li> == call from addSea(getAK())
+ e.books=new Set(r);
+ if(r.length>0)treeBooks(e);
+ treeBooksMark(e,amoPT)
+}
+function treeBooks(e){// param e = <li>|<option>
+ let p=e.treeParent;
+ while(p){//cl('treeBooks() p=',p);
+    if(!p.booksChild)p.booksChild=new Set();
+    e.books.forEach(p.booksChild.add.bind(p.booksChild));
+    p=p.treeParent
+ }
+}
+function treeBooksMark(e,f){//marker after <li> about books
+ let b=0,c=0,s='';
+ if(e.books)b=e.books.size;
+ if(e.booksChild)c=e.booksChild.size;
+ if(b)s=(b==1 ? '📘️' : b+'📚');
+ if(c)s=s+" + "+(c==1 ? '📘️' : c+'📚');
+ if(b+c>0){
+    e.style.setProperty("--mark-after","\' 🔸"+s+"\'");
+    e.classList.add('maft');
+    if(f)e.onclick=f
+ }
+}
+function filAG(n,i,a,p){console.log('filAG() n,i,a,p=',n,i,a,p);
+ sea.list.textContent='';
+ sea.name=n;
+ sea.idx=i;
+ sea.bookIdx=a;
+ sea.parId=p;
+ setC(sea)
+}
+/** get tree childs from tga.list
+param e = starting <option>
+param f = 0 (only from titObj{}) | function callback() from dialog()
+param ix = 1 | Set{} if need return array of childs
+param ox = true if include in `ix` self item
+param ex = Set{} excludes key's from merPT() == not call f() at this key's
+param k = true to `ex` collect key's instead items
+return [] all childs starting with `e` if f!=0 <<OR>> [string_name_all_sample_tree,[array_child]] if f==0
+AND call f() on other options (not included in the sample) */
+function treeChilds(pt,e,f=-1,ix,ox,ex,k){//console.log('treeChilds('+pt.name+')',e,f,ix,ox,ex,k);
+ let z=false,y=false,l=e.level,s;
+ if(ix==1)ix=new Set();
+ pt.list.childNodes.forEach(i=>{
+    if(i.DB.id==e.DB.id){
+        z=true;
+        if(ix && ox)ix.add( k ? i.DB.id : i );
+        if(f==0)s=i.textContent//`x` is true on every option after `e`
+    }else{
+        if(z && i.level>l)y=true;//`y` is true only on tree childs
+        else{y=z=false};
+        if(y){
+            if(ix)ix.add( k ? i.DB.id : i );
+            if(f==0)s=s+' & '+i.textContent
+        }else{
+            if(ex){if(!ex.has(i.DB.id))f(i)
+            }else if(f!=-1 && f!=0)f(i)
+        }
+    }
+ });cl('treeChilds() return=',ix,e);
+ if(f==0)return [s,ix]; else return ix
+}
+function reN(o,e,pt){//rename `e`=<option>, `o`=result get() objectStore
+ e.textContent=o.name;
+ if(e.ownl_opt)e.ownl_opt.textContent=o.name;
+ document.querySelectorAll('span[name="'+pt.bookIdArr+o.id+'"]').forEach(i=>{i.textContent=o.name});
+ e.reName=undefined
+}
+function reP(o,e,pt){//replace from addSea(...if(e.rePlace)...) throw ediObj()|merPT()
+ let k=true;
+ let a=[...treeChilds(pt,e,-1,1,true)];// child with self
+ pt.DB=o;
+ if(o.under)pt.under=o.under;
+ else{
+    if(o.pa!=0)pt.under=pt.list.querySelector('option[value="'+o.pa+'"]');
+    else{a[0].level=0;a[0].treeParent=undefined;treeHierMark(a[0])}
+ };
+ addSeaList(pt,a[0]);
+ for(let i=0; i<a.length-1; i++){pt.under=a[i];addSeaList(pt,a[i+1])};
+
+ if(pt.arrMer){
+     k=false;
+     let i=pt.arrMer.map(a=>a.DB.id).indexOf(e.DB.id);
+     if(i>0){ pt.arrMer.splice(i,1) }
+     if(pt.arrMer.length==0){
+         reD();
+         pt.arrMer=undefined;
+     }
+ }
+ if(k)reB(pt);
+ e.rePlace=undefined;
+ return k
+}
+function reB(pt){// from reP|reD()
+ pt.list.childNodes.forEach(e=>{
+   if(e.booksChild)e.booksChild.clear();
+   treeBooks(e)
+ })
+}
+function reT(e){// from addSea|reD()
+ if(e.name=="tags")tga.ownl.childNodes.forEach(i=>{
+    if(i.list_opt.treeParent)treePathMark(i,i.list_opt.treeParent);
+    else treePathMark(i);
+ })
+}
+function reM(pt){cl('reM() pt.arrMer=',pt.arrMer)// from addSea|merPT()
+ if(pt.arrMer)upDate(pt.arrMer)
+ else reD()
+}
+function reD(){
+ if(tga.delMer)delDate({name:'tags',transFunc:()=>{cl('reD() + delDate()');//from reM|reP()
+    tga.delMer=undefined;
+    tga.eleMer.selected=true;
+    tga.eleMer=undefined;
+    reB(tga);
+    reT(tga)
+ }},tga.delMer)
+}
+/** add <li>|<option> to <ul>|<select> for objectStore `pipls`|`tags`|`books`|`marks`
+    DB function from dbf{} for objectStore `pipls` & `tags`
+FOR add|rename|select pipls|tags — from ebook.set.js <section#ebk>|<section.sets>
+OR show all authors|ganres|searchString into <main><article id="sea"><ul>...
+param o = result value from cursor filAG|filPT(setC())|search()|searchA()
+    OR result from upDate(set1()) after rename objectStore `pipls`|`tags`
+    OR `books` objectStore with o.title[] from amoPT()|search()
+    OR `marks` objectStore with o.w from search()
+param e = sea from search|amoPT|filAG() OR pip|tag from filPT|newPT() OR <options> from set1()
+    — e.book = <figure> from filEbk(filPT()) | = -1 from amoPT|filAG|setPT(filPT())|search() | = undefined from set1()
+param m = marker before <li> */
+function addSea(o,e,m=''){cl('addSea() o=',o,' e=',[e])
+ if(e.book==undefined){//rename|replace pip|tga from ediObj|merPT(upDate(set1()))
+    let pt=getPT(e);
+    let k=true;
+    if(e.reName)reN(o,e,pt);
+    if(e.rePlace)k=reP(o,e,pt);
+    if(k)reT(pt)
+    if(e.reMerge){e.reMerge=undefined;e.selected=true;reM(pt)}//elect tags
+ }else{//new <li>|<option>
+    let p=document.createElement(e.tit);
+    p.value=o.id;
+    p.name=e.name;
+    p.DB=o;cl('addSea() create <'+e.tit+'>.DB=',p.DB);
+    p.textContent=( o.name || o.title[0]+( o.title[1] ? ' / '+o.title[1] : '' ) );
+    if(m){p.style.setProperty("--mark-before","\'"+m+" \'");p.classList.add('mbef','lik')};
+
+    if(e.book==-1)addSeaList(e,p)// only e.list
+    else{// e.list OR e.ownl ?
+        if(e.book.DB[e.bookIdArr] && e.book.DB[e.bookIdArr].includes(o.id)){// e.ownl Ye! <== at book editor `ebk`
+            if(e.parId){//it's `tags`
+                addOwnList(e,p,e.under);
+                addSeaList(e,p)
+            }else e.ownl.appendChild(p)// it's `pipls`
+        }else addSeaList(e,p)
+    }
+
+    if(o.title){// it's books
+        p.book=o;
+        p.onclick=(e)=>{
+            let f=document.getElementById('b'+e.target.book.id);
+            if(!f)f=addFig(e.target.book,{new:true});
+            rad.prepend(f);
+            rad.scrollTop=0;
+            rad.querySelectorAll('figure').forEach((f,i) => {
+             f.style.boxShadow = (i==0 ? 'inset 0 28px 28px -28px var(--select-shadow),inset 0 -28px 28px -28px var(--select-shadow)' : 'none')
+            });
+            seaSha()
+        }
+    }else{
+        if(o.w)p.onclick=goMark// it's marks
+        else getAK({name:'books',idx:e.bookIdx,key:IDBKeyRange.only(o.id),func:e.func,item:p})// it's pipls|tags
+    }
+    return p
+ }
+}
+/** add <option> to `e`=tga ownl (!!not list!!)
+param p = corresponding <option> from tga.list
+param t = treeParent <option> */
+function addOwnList(e,p,t){
+ let pp=document.createElement(e.tit);
+ pp.value=p.value;
+ pp.textContent=p.textContent;
+ pp.onclick=(e)=>{//cl('onClick OWNL',e.target);
+    e.target.parentNode.childNodes.forEach(i=>{ i.list_opt.selected=i.selected });
+    e.target.list_opt.click()
+ };
+ pp.list_opt=p;
+ if(t)treePathMark(pp,t);
+ p.ownl_opt=pp;
+ p.classList.add('ownl');
+ e.ownl.appendChild(pp)
+}
+/** add `p`=<li>|<option> to `e`=pip|tga list (!!not ownl!!)
+— e.under = previous sibling <option>|<li> from search|setC|newPT()
+— e.DB = create new pip|tga */
+function addSeaList(e,p){cl('addSeaList() e=',[e],p.name)
+ if(e.under!=undefined){
+    if(e.under.level!=undefined){
+        p.level=e.under.level+1;
+        p.treeParent=e.under;
+        treeHierMark(p)
+    }
+    e.under.after(p);
+    if(e.DB){
+        e.under.scrollIntoView({behavior:'smooth',block:'nearest',inline:'start'});
+        p.selected=true;
+        e.DB=undefined
+    };
+    e.under=undefined
+ }else{//add top element
+    if(p.DB.pa==0)p.level=0;
+    if(e.DB){
+        e.list.prepend(p);
+        e.list.scrollTop=0;
+        e.DB=undefined
+    }else e.list.appendChild(p)
+ }
+}
+function treeHierMark(o){//param o = <option>|<li>
+ let s= o.level==0 ? '' : "\'"+' '.repeat(o.level*3)+"∟\'";
+ o.style.setProperty("--mark-before",s);
+ car(o,s,'mbef')
+}
+function treePathMark(o,p){//self & treeParent <option>|<li>
+ o.style.setProperty("--mark-after",(p ? "\' /"+p.textContent+(p.treeParent ? "/"+p.treeParent.textContent : "")+"\'" : ''));
+ car(o,p,'maft')
+}
+function amoPT(e){// param e = Event <li>.onclick from sea.func() | = object pip|tga.amo onclick(this)
+ if(e.alls===0){
+    delObj(e.target);
+    return
+ }
+ let c,d,b=e.books;//click on amo
+ if(!b){b=e.target.books;c=b.size;d=e.target.booksChild}//click on <li> sea
+ else{c=b.size;d=e.booksChild};cl('amoPT() b=',b,c,d);
+
+ if(ebk && ebk.savIs){dialog(dt.v.sa);return}
+ sh.up('MAIN');
+ sh.hid('SEN','EBK');
+ secs.forEach(i => {i.cloSet()});
+ sea.list.textContent='';
+ sea.input.value=sea.pre_search=e.booksName || e.booksChildName || e.target.textContent;
+ if(sea.divs[2].classList.contains('close')){
+    sea.divs.forEach(i=>{ if(!i.classList.contains('close'))detUp(sea.list,i) });
+    detUp(sea.list,sea.divs[2])
+ };
+ if(c>0){get1('books',b,addSea,sea,mas.books);seaSha(1)}
+ else if(d && d.size>0){get1('books',d,addSea,sea,mas.books);seaSha(1)}
+}
+function seaSha(k){
+ sea.list.style[ k ? "setProperty" : "removeProperty" ]("--s","var(--select-shadow)")
+};
+const mas={
+ 'books':'📘️'
+,'marks':'🔖'
+,'pipls':'👤️'
+,'tags':'🎟️'
+}
+function search(S){
+ sea.list.textContent='';
+ if(S=='*'){searchA();return}
+ let s=S.toLowerCase();//cl('search',s)
+ let a=['books','marks','pipls','tags'];
+ let d=['','','auths','tags'];
+ let n=new sea.nofA(a.length);
+ let t=db.transaction(a,"readonly");
+ a.forEach((o,i) => {
+    t.objectStore(o).index('nams').openCursor().onsuccess = (e)=>{
+        let c=e.target.result;
+        if(c){//cl('search('+mas[o]+') name=',c.key);
+            if(c.key.toLowerCase().indexOf(s)>-1){
+                sea.name=a[i];
+                sea.bookIdx=d[i];
+                addSea(c.value,sea,mas[o]);
+                n.add(i)
+            };
+            c.continue()
+        }else n.res()
+    }
+ });
+};
+sea.nofA = function(l){
+ var c=0,l=l,n=new Array(l).fill(0);
+ this.add=(i)=>{n[i]++};
+ this.res=()=>{c++;if(c==l)nof(n.reduce((a,v)=>a+v),sea)}
+}
+function searchA(){
+ let t=db.transaction(['books','marks'],"readonly");
+ t.objectStore('books').index('dats').openCursor(null,'prev').onsuccess = (e)=>{
+    let b=e.target.result;
+    if(b){//cl('searchA() book=',b.value);
+        sea.name='books';
+        let p=addSea(b.value,sea,mas['books']);//cl('searchA() p=',p);
+        t.objectStore('marks').index('books').openCursor(IDBKeyRange.only(b.value.id)).onsuccess = (a)=>{
+            let m=a.target.result;
+            if(m){//cl('searchA() mark=',m.value);
+                sea.under=p;
+                sea.name='marks';
+                addSea(m.value,sea,'   '+mas['marks']);
+                m.continue()
+            }
+        };
+        b.continue()
+    }
+ }
+}
+/** *********************** Show Book ******************************* */
+/** show selected|opened book - ONLY maked figure|dt.b <!!< NOT test on right book set
+param o = addFigObject{} from addBook() | <figure> with same fields - sets on addFig() at start session with DB
+o.DB = {} object "books" from db
+o.ZIP = JSZip || null
+o.AU = {"name_file":url_to_blob,...} already unziped files || {}
+-- <figure> onclick="showBook(this)" <== set at addFig()
+-- from addBook()->prepFig()
+-- from goMark()->prepFig()
+ */
+function showBook(o){cl('showBook() dt.b=',dt.b,' o=',[o])
+ if(dt.b && (dt.b.id==o.DB.id || o.id==dt.b.id)){sh.hid('MAIN');return}
+ fot.textContent = '';
+ nav.textContent = '';
+ if(o.DB.nav)nav.insertAdjacentHTML('beforeend',o.DB.nav);
+ dt.z=undefined;
+ dt.b=o;//!!make it after fill `nav`!! >> see epub(...dt.b=undefined...) & epubNav(...nav.insertAdj...)
+
+ if(db && o.DB.id)setC({name:'marks',idx:'books',key:IDBKeyRange.only(o.DB.id)});
+
+ let n=0;// go to file in spine - setFile(n)
+ if(o.mark){ n = typeof o.mark === 'boolean' ? o.DB.last.c : o.mark.c }
+
+ if(o.ZIP){
+     prs();setFile(n)
+ }else{
+  if(o.DB.raw && ['html','epub'].includes(o.DB.type)){
+    let zip = new JSZip();
+    zip.loadAsync(o.DB.raw)
+    .then(z => { o.ZIP=z;prs();setFile(n) }, e => { setMsg(e.message+'<br>showBook('+o.DB.src+')',4000);return })
+  }else setFile(n);
+ }
+}
+/** make array dt.b.prs[] for draw bumps on fot.book() */
+function prs(){
+ let R=[],s=0,p=0,l=dt.b.DB.spine.length-1;
+ dt.b.DB.spine.forEach((f,i) => {
+    let z = dt.b.ZIP.files[f];
+    if(z)z = z._data.compressedSize;
+    else z=0.05;
+    if(i<l)R.push(z);//without last
+    s = s+z;
+ });
+ if(R.length<1){dt.b.prs=null;return};
+ R.forEach((r,i) => {// increment percents on every file without last
+    R[i]=p+r*100/s;
+    p=R[i]
+ });
+ R.unshift(0);//first with 0
+/* R.forEach((r,i) => {// percents on every file
+    if(i==R.length-1)R[i]=100-p;
+    else{
+        R[i]=r*100/s;
+        p=p+R[i]
+    }
+});*/
+ dt.b.prs = R;
+}
+/** go to next\prev file in book spine --from showBook(), goMark(), goHref(), goFile()
+param c = number in list of files o.DB.spine !!==> 0 < c < o.DB.spine.length */
+function setFile(c){cl('setFile('+c+')',dt.b);
+ dt.c=c;
+ auFile(dt.b.DB.spine[c])
+}
+/** go to file
+param f = name file not from o.DB.spine but in dt.b.ZIP.file
+= SET dt.z = f <<== undef it on showBook() & moveOver() */
+function zipFile(f){cl('zipFile('+f+')');
+// let c = Object.keys(dt.b.ZIP.file).indexOf(f);
+ if(dt.b.ZIP.file[f]){
+    dt.z = f;
+    auFile(f)
+ }else console.log('NOT FOUND file',f);
+}
+/** test file already at dt.b.AU[]
+param f = full name file = as present into dt.b.ZIP.file{}
+= f maybe startsWith 'imgCcover.jpeg' = name for unzip f.slice(4) and makeCover() <== after html() or epub()
+ into dt.b.AU[f] maybe string:
+= 'blob:http://host/479a61-62...a15-a6b7ca' = ready link for setSrc() <== after setHTML() or makeCover()
+= 'http://host.name/path' = global link = do nothing — go setSrc()
+= 'imgCblob:http://host/479a61-62...a15-a6b7ca' = already inziped cover image for makeCover(setSrc()) <== after cover()
+= '<html>...</html>' = any string for setHTML(makeHTML(setSrc())) */
+function auFile(f){
+ if(dt.b.AU[f]){
+  let t = dt.b.AU[f].slice(0,4);
+  oau[t] ? oau[t](f) : setHTML(f,dt.b.AU[f])
+ }else{
+  if(f.startsWith('imgC')) dt.b.ZIP.file(f.slice(4)).async("blob").then(b => { dt.b.AU[f]=URL.createObjectURL(b); makeCover(f,true) })
+  else dt.b.ZIP.file(f).async("string").then(s => { setHTML(f,s) })
+ }
+};
+const oau={
+ 'blob':setSrc
+,'http':setSrc
+,'imgC':makeCover
+}
+/** set iframe.src now OR on sh.f() */
+function setSrc(f){cl('setSrc() fr.v=',fr.v,' dt.b.AU[f]=',dt.b.AU[f])
+ if(fr.v)sh.f=setSrc.bind(this,f);//run on show IFRAME
+ else{
+  ifr.src = dt.b.AU[f];
+  sh.up('IFRAME')
+ }
+}
+function makeCover(f,k){
+   let s='<!doctype html><html><style>html,body,img{margin:0;padding:0;border:0}body{width:100%;height:100%;display:flex;align-items:center;justify-content:center}</style><body><img src="'+( k ? dt.b.AU[f] : dt.b.AU[f].slice(4) )+'" style="width:99%;max-height:99%;"></body></html>';
+   dt.b.AU[f]=URL.createObjectURL(new Blob([s],{type:'text/html'}));
+   setSrc(f)
+}
+function setHTML(f,s){
+ makeHTML(dt.b,f,s).then(txt => {
+  dt.b.AU[f] = URL.createObjectURL(new Blob([txt],{type:'text/html'}));
+  setSrc(f)
+ })
+};
+
+/** reincarnation html|css string `txt` for file name `f`
+- change `src="1.jpg"` to `src="blob:http://host/479a61-62...a15-a6b7ca"`
+- change <a href="../../XXX.html"> to <a href="ZZZ/YYY/XXX.html"> = full relation path from root inside zip-file
+param o = addFigObject{} from epubNav() | dt.b from setHTML()
+param f = file name with full relation path from root zip-file :>exmple:> 'ZZZ/YYY/qwerty.html'
+return string new `txt` */
+const makeHTML = async (o,f,txt) => {//cl('makeHTML START '+f,o,txt)
+ const t = souTag(txt);
+ const a = await repTag(t,o,f);//cl('makeHTML return {} await repTag ',a,o.AU)
+ const p = await proTag(a);//cl('makeHTML return {} await proTag ',p)
+ return repTxt(txt,a,p)
+}
+/** ending replace into `txt` an return new `txt`
+param a = [] repTag(txt) return
+param p = [] proTag(txt) return*/
+function repTxt(txt,a,p){
+ a.forEach((v,i) => {
+  if(v){
+   txt = txt.slice(0,v.beg)
+    + ( (typeof v.rep === 'string') ? v.rep : p[i])
+    + txt.slice(v.end+1);// !!! end+1 !!!
+  }
+ });//cl('repTxt RESULT ',txt);
+ return txt
+};
+/** get resolve "blob:http://host/..." from all promices
+param a = [] repTag() return
+return [ string | undefined, ... ] */
+const proTag = async (a) =>
+Promise.all(a.map(({rep}) =>
+ typeof rep === 'object' ? rep : undefined
+));
+
+const tst = {
+// 'img':()=>{return ' style="width:100%;max-height:99vh"'}
+//,'link':(n)=>{return ' name="'+n+'"'}
+};
+const mte = {
+ 'script':'javascript'
+,'link':'css'
+,'iframe':'html'
+,'track':'vtt'
+,'@import "':'css'
+,"@import '":'css'
+,'import "':'javascript'
+,"import '":'javascript'
+,'from "':'javascript'
+,"from '":'javascript'
+,"import(":'javascript'
+};
+const sty = {
+'.svg':'image/svg+xml'
+};
+const bty = {
+ '.mp4':'video/mp4'
+,'webm':'video/webm'
+};
+/** Promice for all replace - with uzip & recursion makeHTML()
+param t = [] souTag(txt) return
+param o = addFigObject{} | dt.b
+param f = file name for analize
+return
+[ {rep: Promise, sou: "2.jpg", beg: 1836, end: 1843}
+ ,{rep: "blob:http://host/...", sou: "in.css", beg: 1773, end: 1779}, ... ]  */
+const repTag = async (t,o,f) =>
+Promise.all(t.map(({sou, beg, end, tag, pat, clo}) => {//cl('repTag() ',f,sou,tag);
+ if(tag=='base' || tag=='use')return false;
+ let css=checkExt(sou,'css');
+ if(tag=='link' && !css)return false;
+
+ let rep=link(f,sou);
+ if(!rep)return false;
+
+ let a = rep.split('#');
+ rep = a[0];
+ let has = a[1] ? '#'+a[1] : '';
+
+ if(tag=='a' || tag=='area'){
+  return {rep:rep+clo+' onclick="parent.goHref(event)" alt="'+has+'"',sou,beg,end}
+ }
+
+ if(o.AU[rep])rep = o.AU[rep]+has+clo+(tst[tag]?.() || '');
+ else{
+  if(o.ZIP.files[rep]){
+   if(mte[tag] || mte[pat] || css){// <link script track iframe>, import, from, url(name.css)
+	return {rep:o.ZIP.file(rep).async("string").then(s => {
+	 return makeHTML(o,rep,s).then(txt =>{
+		o.AU[rep] = URL.createObjectURL(
+			new Blob([txt],{type:'text/'+(mte[tag] || mte[pat] || 'css')})
+		);
+		return o.AU[rep]+has+clo+(tst[tag]?.() || '')
+	 })
+	}),sou,beg,end}
+   }else{// <img audio video source input embed>, url(name.jpg)
+    let x=rep.slice(rep.length - 4).toLowerCase();
+    let bx=bty[x];
+    let sx=sty[x];
+    return {rep:o.ZIP.file(rep).async(sx ? "string" : "blob").then(b => {
+        if(sx)b = new Blob([b],{type:sx});
+        if(bx)b = new Blob([b],{type:bx});
+        o.AU[rep]=window.URL.createObjectURL(b);
+        return o.AU[rep]+clo+(tst[tag]?.() || '')
+    }),sou,beg,end}
+   }
+  }else return false
+ }
+ return {rep,sou,beg,end}
+}));
+
+const ata=[
+ {b:'src="',e:'"',k:'<',p:' '}
+,{b:"src='",e:"'",k:'<',p:' '}
+,{b:'href="',e:'"',k:'<',p:' '}
+,{b:"href='",e:"'",k:'<',p:' '}
+,{b:'data="',e:'"',k:'<',p:' '}
+,{b:"data='",e:"'",k:'<',p:' '}
+,{b:"url(",e:")",q:true}
+,{b:'import "',e:'"'}
+,{b:"import '",e:"'"}
+,{b:'from "',e:'"'}
+,{b:"from '",e:"'"}
+,{b:"import(",e:")",q:true}
+];
+/** return [{sou:"1.jpg", beg:97, end:108, tag:"img", pat:"src='", clo:"'"},...]
+	ordered from end of `txt` */
+function souTag(txt){
+ let u,i,r=[];
+ ata.forEach(a=>{
+  i=0;
+  while(u = tag(txt,a.b,a.e,i,false)){//{sou,beg,end,pre}
+	if(a.q){//trim `"` | `'`
+	 let l = u.sou.length-1;
+	 if(u.sou[0]=="'" && u.sou[l]=="'")u.sou = u.sou.slice(1,l);
+	 else if(u.sou[0]=='"' && u.sou[l]=='"')u.sou = u.sou.slice(1,l)
+	};
+	let t='';
+	if(a.k){// get <tag>
+	 t = txt.lastIndexOf(a.k,u.beg);
+	 t = txt.slice(t+1,txt.indexOf(a.p,t)).toLowerCase()
+	};
+	u.tag = t;
+	u.pat = u.pre+a.b;
+	u.clo = a.e;
+	r.push(u);
+	i = u.end+a.e.length
+  };
+ });
+ r.sort((a,b)=>{
+  if(a.beg > b.beg) return -1;
+  if (a.beg < b.beg)  return 1;
+  return 0;
+ });
+ return r
+}
+/** make real link (inside ZIP) from relative link and other little things
+- if f='ZZZ/YYY/XXX.ext' >> from u='../AAA.ext' return 'ZZZ/AAA.ext' */
+function link(f,u){
+ if( u[0]=='/' || ['http','data','file','blob'].includes(u.slice(0,4)) ) return '';
+
+// let r=u.indexOf('#');
+// if(r>-1)u=u.slice(0,r);
+ if(u[0]=='#')return f+u;
+
+ if(u[0]=='.'){
+  if(u[1]=='/'){ return u.slice(2)
+  }else{
+	let l=u.split('/');
+	let d=f.split('/');
+	d.pop();
+	l.forEach((x,i,a) => { if(x==='..'){ delete a[i]; d.pop() } });
+	return d.concat(l).filter(n => n).join('/');
+  }
+ }else return path(f)+u
+}
+/** '/ZZZ/YYY/XXX.ext' => 'ZZZ/YYY/' */
+function path(f){
+    let s = (f[0]=='/' ? f.slice(1) : f).split('/');
+    let p = s.slice(0,s.length-1).join('/');
+    return p ? p+'/' : '';
+}
+/** '/ZZZ/YYY/XXX.ext' => 'XXX.ext' */
+function filename(f){
+ let a = f.split('/');
+ return a[a.length-1]
+}
+/** in string `s` search fragment between substrings `b` and `e`
+	begining with position `i` and return this `string` fragment or ''
+if(e==false) > b=tagName >> return rule: <tagName attr attr>returnFragment</tagName>
+if(k==false) return { sou:`sought`, beg:`startPosition`, end:`endPosition`, pre: [ '@' | '' ] }
+	where pre: present '@' before `b` */
+function tag(s,b,e=false,i=0,k=true){
+  let x = s.indexOf((e ? b : '<'+b),i);//console.log('tag() ',b,e,i,x,s.substring(x,x+20));
+  if(x>-1){
+   let p = s[x-1];
+   x = e ? b.length+x : s.indexOf('>',x)+1;
+   let y = s.indexOf((e ? e : '</'+b),x);
+   let r = s.slice(x,y).trim();
+   return k ? r : {sou:r,beg:x,end:y,pre:((p=='@')?'@':'')}
+  }else return ''
+}
+/** ************************ Local Storage **************************** */
+function checkDB(k){
+ let ls=document.getElementById('local_store');//<input type="checkbox">
+ ls.checked=k;
+ ls.addEventListener('change',e=>{
+  if(e.target.checked){
+    dialog('❓️ '+dt.v.sc,0).then(v=>{openDB(e.target)},r=>{e.target.checked=false})
+  }else{
+    dialog('⁉️ '+dt.v.sd,0).then(v=>{dropDB(e.target)},r=>{e.target.checked=true})
+  }
+ })
+}
+/** Open DataBase - name into var dbn, version dbv
+param b = false - open from window.onload() on start session
+	= checkbox id='local_store' - create DB from checkDB(true) */
+function openDB(b){
+ let r = window.indexedDB.open(dbn, dbv);
+
+ r.onerror = (b => {
+  return function(e){cl('DB failed to open: ',e.target.errorCode);
+   if(b)b.checked=false;
+   else set0();
+  }
+ })(b);
+
+ r.onsuccess = (b => {
+  return function(){
+    db = this.result;cl('DB opened from '+((b)?'checkDB()':'onload()')+' =',db);
+
+    if(b){//create into DB new records about changed params on session before create DB
+        setChange();
+        document.body.classList.remove('non_db')
+    }else{
+        checkDB(true);
+        setA()
+    }
+  }
+ })(b);
+
+ r.onupgradeneeded = function(e){//Setup the database objects
+    let d = e.target.result;
+
+    d.createObjectStore("styls",{keyPath:"id"});
+
+    let t = d.createObjectStore("tags",{keyPath:"id",autoIncrement:true});
+    t.createIndex('nams','name',{unique:false});
+    t.createIndex('pars','pa',{unique:false});
+    t.createIndex('pana',['pa','name'],{unique:true});
+
+    let p = d.createObjectStore("pipls",{keyPath:"id",autoIncrement:true});
+    p.createIndex('nams','name',{unique:true});
+
+    let m = d.createObjectStore("marks",{keyPath:"id"});
+    m.createIndex('books','book',{unique:false});
+    m.createIndex('nams','name',{unique:false});
+    m.createIndex('bona',['book','name'],{unique:true});
+    m.createIndex('pers','p',{unique:false});
+
+    let b = d.createObjectStore("books",{keyPath:"id",autoIncrement:true});
+    b.createIndex('nams','title',{unique:false,multiEntry:true});
+    b.createIndex('auths','auth',{unique:false,multiEntry:true});
+    b.createIndex('tags','tag',{unique:false,multiEntry:true});
+    b.createIndex('dats','dat',{unique:false});
+
+    console.log('DB name=',dbn,' version=',dbv,' setup complete ==',d);
+ }
+}
+function dropDB(b){cl("dropDB()");
+ let r = window.indexedDB.deleteDatabase(dbn);
+ r.onerror = (b => {
+  return function(){cl('Error deleting DB');
+   if(b)b.checked=true
+  }
+ })(b);
+ r.onsuccess = function(e){
+  console.log("DB deleted successfully => ",e.result); // should be undefined
+ }
+}
+
+/** remove change style for array [] elements */
+function remChange(a){
+ a.forEach(e=>{
+  e.classList.remove('change');
+  if(e.parentNode)e.parentNode.classList.remove('chapar');
+ })
+}
+/** set changed elements & go to upDate()
+param es =  array of html elements was changed | null - all elements with class="change"
+ every element with class "change" has fileds:
+	<e name="{obj_name}" <= string name of objectStore = key from dbf{name:...}
+	  id="{id_key}" <= string id primary key of objectStore
+	  value="XXX" alt="%">   <= value to objectStore
+in [] elments with same!! name="{obj_name}"
+after run with e => e.DB = {} object item for add\update */
+function setChange(es){cl("setChange() es=",es);
+ if(db){
+  if(es){
+	es.forEach(setEdb);
+	upDate(es);
+  }else{
+    for(const i in dbf){
+        if(dbf[i][1]){
+		 let a=document.querySelectorAll('.change[name="'+i+'"]');cl('setChange() I=',i,'A =',a);
+		 if(a.length>0)upDate(a)
+        }
+	}
+  }
+ }else if(es)es.forEach(i => { setEdb(i); dbf[i.name][0](i.DB,i) })
+}
+/** generate object for update DB */
+function setEdb(e){cl('setEdb() e=',e)
+ e.classList.add('change');
+ if(e.parentNode)e.parentNode.classList.add('chapar');
+ switch(e.name){
+  case "styls":
+	e.DB = {id:e.id,val:e.value+(e.alt || '')};cl('setEdb("styls") e.DB=',e.DB)
+	 break;
+//  case "marks":
+//    if(e.reName)e.DB.name=e.reName;
+//	 break;
+ }
+};
+/** update DB
+param els = [el,el...] array | NodeList of <elements > where:
+	el.DB = {} object for insert\update
+    el.name = string name objectStore: 'styls' | 'books' | 'marks' ...
+- set el.notSetA=true for not run setA() after complete transaction
+- set el.notChange=true for not run remChange() after complete transaction
+- set el.upId=true for set new autoincremented ID to el on success put()
+- set el.setIdObj=[] for adding objects to transaction :>example:> el.setIdObj=["pipls","tags"]
+- set el.setIdName=[field,filed,...] = array fields into el with names :>example:> el.auth=["Ilja Ilf","Evgenij Petrov"] el.tag=["humor","selvaggio"] & el.setIdName=["auth","tag"]
+    search this names into object el.setIdObj[] on index "nams", if not find add new name
+    and make el.DB[field][] with autoincremented primaryKey's corresponding names */
+async function upDate(els){
+ if(els.length==0)return;cl('upDate('+els[0].name+') els=',els)
+ let ao = els[0].setIdObj ? [els[0].name, ...els[0].setIdObj] : [els[0].name];
+ let t = db.transaction(ao, 'readwrite');
+ t.onerror=e=>{console.log('ERROR upDate() Transaction e=',e.target.error)};
+ t.oncomplete = (e => {
+	return function(){
+		if(!e[0].notChange)remChange(e);
+		if(!e[0].notSetA)setA(e)
+	}
+ })(els);
+
+ for(let i of els){
+  let o = t.objectStore(i.name);
+  if(i.setIdName){
+    await Promise.all( i.setIdName.map(getArrNameId,{i,t}) );
+    i.setIdName=undefined;i.setIdObj=undefined
+  };cl('AFTER AWAIT ALL i.DB',i.DB);
+
+  let r = o.put(i.DB);
+  r.onsuccess = function(e){//cl("upDate() onsuccess key=",e.target.result," i =",i)
+    if(i.upId){
+        i.DB.id = e.target.result;
+        if(i.name=="books"){
+            let ms = document.querySelectorAll('#marks li[alt="'+i.id+'"]');cl('upDate() i.id=='+i.id+'== MARKS =',ms)
+            i.id = 'b'+i.DB.id;
+            i.querySelectorAll('figcaption > span').forEach((t,c)=>{t.setAttribute('name','tag'+i.DB.tag[c])});
+            i.querySelectorAll('figcaption header span').forEach((a,c)=>{a.setAttribute('name','auth'+i.DB.auth[c])});
+            if(ms.length>0){
+                ms.forEach(m => {m.DB.book=i.DB.id});
+                upDate(ms)
+            }
+        }
+        i.upId=undefined
+    }
+  }
+  r.onerror = function(e){
+    console.log('ERROR upDate() objectStore('+els[0].name+').put item=',i.DB,' e=',e.target.error)
+  }
+ }
+};
+/** make from this.i[a]=[name,name,...] new array this.i.DB[a]=[id,id,...] */
+async function getArrNameId(a,z,m,l=0){cl('getArrNameId('+a+')',this);// "auth" "tag"
+ if(this.i[a] && (l=this.i[a].length) > 0){cl('getArrNameId('+a+') l=',l);
+    this.i.DB[a] = new Array(l);
+    return Promise.all(this.i[a].map(getNameId,{t:this.t,i:this.i,a,z}));
+ }else return 1
+};
+/** make from `name` [present|new] `id` */
+async function getNameId(n,c){cl('getNameId('+n+') this=',this);
+ return new Promise(resolve=>{cl('getNameId('+n+') Promise this=',this);
+    let s = this.i.setIdObj[this.z];
+    let o = this.t.objectStore(s);
+    let d = o.index('nams');
+    let r = d.getKey(n);
+    r.onerror=resolve;
+    r.onsuccess=e=>{cl('setIdName onsuccess getKey id=',e.target.result);
+        if(e.target.result){this.i.DB[this.a][c]=e.target.result;resolve(1)
+        }else{cl('getNameId NOT SELECT');
+            let d = {name:n};
+            if(s=='tags')d.pa=0;
+            let q = o.add(d);
+            q.onerror=resolve;
+            q.onsuccess=e=>{this.i.DB[this.a][c]=e.target.result;resolve(1)}
+        }
+    }
+ })
+}
+/** get objectStore
+param n = name objectStore
+param a = Array[] | Set{} of key for get
+param f = function callback on success get */
+function get1(n,a,f,x,y){cl('get1('+n+')',a)
+ let o = db.transaction([n],'readonly').objectStore(n);
+ a.forEach(i=>{
+    o.get(i).onsuccess=e=>{ f(e.target.result,x,y) };
+ })
+}
+/** get All keys objectStore
+param o = {}
+    o.name = objectStore name
+    o.idx = name index
+    o.key = IDBKeyRange for get()
+    o.func = function callback onsuccess with two arguments (result,item)
+    o.item = for o.func()
+retrun e.target.result if not present o.func
+ */
+function getAK(o){
+ let s = db.transaction(o.name,"readonly").objectStore(o.name);
+ if(o.idx)s = s.index(o.idx);//cl("getA() o=",o,s);
+ s.getAllKeys(o.key).onsuccess=(e)=>{//cl("getAK() e.target.result=",e.target.result);
+    if(o.func)o.func(e.target.result,o.item);
+    else return e.target.result
+ }
+}
+/** select all from DB on start session as setA() without argument OR
+param els = [] | NodeList — the same in upDate() */
+function setA(els){cl('setA()',els);
+ if(els){
+  if(els.length==1)set1(els[0]);
+  else{
+    let o={name:els[0].name,els:[...els].sort((a,b)=>{return a.DB.id - b.DB.id})};
+    setC(o)
+  }
+ }else for(const i in dbf){ if(dbf[i][1])setC({name:i,...dbf[i][1]}) }//on start session
+}
+/** get cursor & run dbf[o.name][0](result,o) on every object
+param o = {}
+    o.name = objectStore name
+    o.idx = index name
+    o.key = IDBKeyRange for cursor
+    o.els=[els] then go from setA() with many <els> and it's present on document and cursor continue only at this el.DB.id
+    o.list & o.tit for "Not found" message
+    o.def = true for collect primaryKey's and call setDef() after cursor circle
+    o.count = count of first's objectStore
+    o.direct = direction to travel
+    o.parId = true for draw tree stucture at addSea()
+return int count object */
+function setC(o){cl("setC()",[o]);
+ let s = db.transaction(o.name,"readonly").objectStore(o.name);
+ if(o.idx)s = s.index(o.idx);cl("setC()",s);
+ let a={i:0},b=[];
+ let ob,kc,ks=o.key;
+ if(o.els){
+    ob=o.els.shift()
+    ks=IDBKeyRange.bound(ob.DB.id, o.els[o.els.length-1].DB.id);
+ };cl('setC() ks=',ks,o.direct,ob,o.els)
+ let r=s.openCursor(ks,o.direct);
+
+ r.onerror=()=>{cl('CURSOR ERROR=',r.error)};
+ r.onsuccess=e=>{
+  let c=e.target.result;
+  if(c){console.log('setC() CURSOR value=',c.value,'primaryKey=',c.primaryKey,'key=',c.key);
+    if(o.def)b.push(c.primaryKey);
+    if(o.parId){
+        if(c.value.pa==0){ a[c.primaryKey]=dbf[o.name][0](c.value,o); a[c.primaryKey].level=0
+        }else{
+            if(a[c.value.pa]){ o.under=a[c.value.pa]; a[c.primaryKey]=dbf[o.name][0](c.value,o)
+            }else b.push(c.value)
+        };
+    }else dbf[o.name][0](c.value,ob?ob:o);
+    a.i++;
+    if(a.i==o.count)return a.i;
+    if(!o.key && o.els){
+        if(o.els.length>0){
+            ob=o.els.shift();
+            kc=ob.DB.id
+        }else return a.i
+    };cl('setC() kc=',kc,ob,o.els)
+    c.continue(kc)
+  }else{
+    if(o.def)setDef(b)// set default lang, width, color & background if its not present into DB
+    nof(a.i,o);
+    if(o.parId)while(b.length>0)b.forEach((c,i)=>{
+        if(a[c.pa]){
+            o.under=a[c.pa];
+            a[c.id]=dbf[o.name][0](c,o);
+            b.splice(i,1)
+        }
+    })
+  }
+  return a.i
+ }
+}
+function nof(c,o){// "Not found" <element>
+ if(c==0 && o.list && o.tit){
+    let i=document.createElement(o.tit);
+    i.textContent=dt.v.nf;
+    i.value=-1;
+    i.classList.add('nof');
+    o.list.appendChild(i)
+ }
+}
+/** set default lang, width, color & background ==> from set0(), setC() & ebook.set.js/inDef() */
+function setDef(a){//cl('setDef()',a)
+    if(a instanceof Event)a=undefined;
+    if(!a || !a.includes('c'))setStyleDay('c');
+    if(!a || !a.includes('b'))setStyleDay('b');
+    if(!a || !a.includes('w'))setStyle({id:'w',val:'500px'});
+    if(!a || !a.includes('l'))setStyle({id:'l',val:'_'})
+}
+/** select single object from DB & run dbf[o.name][0](result,o)
+param o = <element name="styls" id="l"> | {DB:{id:XXX}, name:"books"} */
+function set1(o){console.log('set1() o=',o," objectStore=",o.name," o.DB.id=",o.DB.id," o.id=",o.id)
+ db.transaction(o.name,"readonly").objectStore(o.name)
+    .get(o.DB.id || o.id)
+    .onsuccess = e=>{ dbf[o.name][0](e.target.result,o) }
+}
+/** delete objectStore from DB & Element from DOM
+param el the same in upDate([el]) */
+function delObj(e){cl('delObj() e=',e);
+ let n=titObj[e.name](e);
+ dialog(dt.v.de+' <b>'+n[0]+'</b>',0).then(v=>{
+    if(db){
+        if(e.tagName=="FIGURE"){// with delete books --> delete marks auths tags
+            if(dt.b.DB.id==e.DB.id){
+                dt.b=undefined;
+                fr.v=undefined;
+                dt.r.setProperty('--foot','0px');
+                document.body.classList.add('first_open');
+                document.querySelector('title').textContent='e:Book';
+                //ifr.contentWindow.location.href=undefined;
+            }
+            let t=db.transaction(['books','marks','pipls','tags'],"readwrite");
+            let b=t.objectStore('books');
+
+            let m=t.objectStore('marks').index('books').openCursor(e.DB.id);
+            m.onsuccess=(s)=>{ let c=s.target.result; if(c){c.delete();c.continue()} };
+
+            [[t.objectStore('pipls'),'auth','auths'],[t.objectStore('tags'),'tag','tags','pars']].forEach(pt=>{
+                if(e.DB[pt[1]]){
+                 let a=b.index(pt[2]);
+                 e.DB[pt[1]].forEach(i=>{
+                    a.getAllKeys(i).onsuccess=(k)=>{//cl('DEL '+pt[0]+' into '+e.DB.id+' for i=',i,k.target.result)
+                        if(k.target.result.length<2){//i == candidate for delete
+                            if(pt[3]){
+                                pt[0].index(pt[3]).getAllKeys(i).onsuccess=(p)=>{
+                                    if(p.target.result.length==0)pt[0].delete(i)
+                                }
+                            }else pt[0].delete(i)
+                        }
+                    }
+                 })
+                }
+            });
+            b.delete(e.DB.id);
+            e.remove()
+        }else delDate(e,n[1])
+    }else e.remove()
+ },nul)
+}
+function delDate(e,a){//<li> Bookmark | Authors | Tags <option> OR `a` array[]|set{} objects for delete
+ if(!a)a=[e];
+ let t=db.transaction([e.name],"readwrite");
+ t.onerror=(r)=>{console.log('delDate() ERROR',r)};
+ if(e.transFunc)t.oncomplete=e.transFunc;
+ let o=t.objectStore(e.name);
+ a.forEach(i=>{
+    let r=o.delete(i.DB.id);
+    r.onsuccess = ()=>{ if(i.clearFunc)i.clearFunc(); i.remove() }
+ })
+};
+const titObj={
+ "marks":e=>{return [e.children[1].textContent]}
+,"pipls":e=>{return [e.textContent]}
+,"tags":e=>{return treeChilds(tga,e,0,1,1)}
+,"books":e=>{return [e.DB.title[0]]}
+};
+var swr;
+if('serviceWorker' in navigator){
+ document.getElementById('swr').classList.remove('dn');
+ let ofl=document.getElementById('service_worker');
+ ofl.onchange=e=>{
+    if(e.target.checked==true)navigator.serviceWorker.register('/ebook.sw.js').then(r=>{ swr=r; console.log('Service Worker Registered',swr) });
+    else swr.unregister().then(j=>{if(j){swr=undefined;console.log('Service Worker Unregistered')}else{e.target.checked=true;console.log('Service Worker Unrgister failed')}})
+ };
+ navigator.serviceWorker.getRegistration().then(r=>{if(r){swr=r;ofl.checked=true}});
+}
+/** *********************** key & swipe & drag *********************** */
+const ac={
+ 66:sh.tog.bind(this,'MAIN','NAV')// Alt+B
+,67:sh.tog.bind(this,'NAV','MAIN')// Alt+C
+,77:sh.tog.bind(this,'MENU')// Alt+M
+,78:sh.togNM// Alt+N
+,76:lof.click.bind(lof)// Alt+L
+,71:globalFile// Alt+G
+,82:addMark// Alt+R
+,83:fetchSet.bind(this,sen)// Alt+S
+};
+const an={
+ "ArrowUp":sh.tog
+,"ArrowDown":sh.togNM
+};
+const rn={
+ "ArrowLeft":movePage
+,"PageDown":movePage
+,"ArrowRight":movePage
+,"PageUp":movePage
+};
+const rc={
+ 32:movePage
+};
+function keyDown(e){//cl('keyDown «'+e.key+'» code=',e.keyCode,' alt=',e.altKey);
+//console.log('sh.isRead = ',sh.isRead(),' MAIN=',sh.MAIN,' SECTION=',sh.SECTION);
+ if(dig.open){
+    if(e.key=='Enter')dig.res();
+    if(e.key=="Escape" && dig.typeLog>1)dig.reject(null);
+    return
+ };
+ let a=ac[e.keyCode];
+ if(a && !e.shiftKey && !e.ctrlKey && !e.metaKey && e.altKey)a();
+ an[e.key]?.(e.key);//always
+ if(sh.isRead()){//only on reading = not show MAIN || SECTION's
+  rc[e.keyCode]?.(e.keyCode);
+  rn[e.key]?.(e.key)
+ }
+};
+let sw={};
+function tapStart(e){//cl("tapStart",e.touches[0])
+ sw.x = e.touches[0].clientX;
+ sw.y = e.touches[0].clientY;
+}
+function tapMove(e){//cl("tapMove",e.touches[0],e.target)
+ if(!sw.x || !sw.y || dig.open || getSel(false)!='')return;
+ let x = sw.x - e.touches[0].clientX;
+ let y = sw.y - e.touches[0].clientY;
+
+ if(Math.abs(x) > Math.abs(y)){
+    if(fr.h.contains(e.target))movePage(x>0?-1:1); else if(x>0)sh.hid('NAV')
+ }else{
+    if(fr.h.contains(e.target)){ if(y<0)sh.tog('MAIN','NAV'); else sh.tog('MENU') }
+ };
+ sw.x=null;
+ sw.y=null;
+}
+function dragOver(e){
+ dt.r.setProperty('--main-shadow','var(--select-shadow)');
+ e.preventDefault();
+}
+function dragLeave(e){
+ dt.r.setProperty('--main-shadow','var(--main-shadow-drop)');
+}
+function dropHand(e){//console.log('dropHand()',e);
+ dt.r.setProperty('--main-shadow','var(--main-shadow-drop)');
+ e.preventDefault();
+
+ let d = e.dataTransfer.items;
+ if(d){
+  for(let i = 0; i < d.length; i++){//cl('dropHand() item',d[i])
+	if(d[i].kind === 'file'){
+	 localFile(d[i].getAsFile());
+	 return
+	}else
+	 if(d[i].type.match('^text/uri-list')){
+	  d[i].getAsString(globalFile);//d[i].getAsString(console.log);
+	  return
+	 }
+  }
+ }else{
+  if(e.dataTransfer.files.length>0)localFile(e.dataTransfer.files[0])
+ }
+}
+function cl(a,b,c,d,e){console.log(a,b,(c==undefined?'':c),(d==undefined?'':d),(e==undefined?'':e))}
+</script>
+</html>

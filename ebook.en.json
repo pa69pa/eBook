@@ -1,0 +1,30 @@
+{
+ "title":{
+  "#lf":"Open local file .epub, .zip or .html"
+ ,"#gf":"Open global file .epub, .zip or .html"
+ ,"#ws":"Settings"
+ ,"#as":"List of books"
+ ,"#mk":"Make bookmark"
+ ,"section > div":"Close settings window"
+ }
+,"text":{
+  "label[for='local_store']":"Save you's work and settings on Local Storage"
+ ,"label[for='service_worker']":"Off-line working"
+ ,"main > span *:nth-child(2)":"Local file"
+ ,"main > span *:nth-child(3)":"Global link"
+}
+,"u":"Enter URL for file .epub, .zip, .html"
+,"sc":"Create Local Storage"
+,"sd":"Delete Local Storage"
+,"uz":"Unzip"
+,"fh":"Fetch"
+,"ef":"Impossible fetch file<br>You can <a>download</a> it<br>And after <b>open</b> it as local file"
+,"ns":"Don't understand what's in the archive"
+,"bm":"Bookmarks"
+,"cm":"❓️ Create bookmark with name"
+,"em":"Rename"
+,"de":"❓️ Delete"
+,"nf":"Not found"
+,"sa":"❗ In first save data, please"
+,"sl":"❗ Select anythings, please"
+}

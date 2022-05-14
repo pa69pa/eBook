@@ -1,0 +1,204 @@
+<style>
+.rangew section{color:transparent;background:transparent}
+.rangew section select,
+.rangew section summary,
+.rangew #local_store,
+.rangew #set_theme,
+.rangew #indef button,
+.rangew nav,
+.rangew main{opacity:0}
+.rangew #set_keys,
+.sets select[name="ownl"], .sets .tro{display:none}
+.rangew iframe{border-color:red}
+.rangew .chapar{box-shadow:unset}
+
+#w{width:95%;margin-left:calc(5% / 2)}
+section details{z-index:100}
+section summary{
+ position:relative;
+ box-shadow: 1px 1px 2px gray;
+ font-size:calc(var(--m) / 1.667);
+ background: linear-gradient(45deg, transparent, var(--c));
+ padding:0 3px;cursor:pointer;
+}
+section summary::before{content: attr(rel);position:absolute;right:5px;bottom:2px;font-size:70%}
+section details > div{margin:7px auto}
+
+#pip,#tag{text-align:center}
+.sets .sel2sel header{margin-left:var(--m)}
+.sel2sel select{width:calc((100% - var(--m) - 40px) / 2);height:10em}
+.sets .sel2sel select{width:calc((100% - var(--m) - 40px) / 1.2);height:16em}
+.sel2sel footer{width:var(--m);display:inline-block}
+.sel2sel footer > div:first-of-type{margin-bottom:.8em}
+.sel2sel footer > div, .sel2sel header span{cursor:pointer}
+.sel2sel footer div span{text-align:center;display:inline-block;min-width:1.2em;line-height:.6em;}
+.sel2sel footer div span i{font-size:70%}
+#auth_ownl,#tag_ownl{margin-bottom:-1.7em;margin-top:20px}
+#ebk .tro[disabled]{pointer-events:none;color:gray}
+#book_cover{margin-top:20px}
+#book_cover span{cursor:pointer}
+
+#set_theme div, #indef{
+ display:flex;align-items:center;justify-content:center;
+ text-align:center;padding:0 3px
+}
+#da{color:var(--c-day);background-color:var(--b-day);}
+#ni{color:var(--c-night);background-color:var(--b-night);}
+.seshad{box-shadow:0 0 7px var(--select-shadow);cursor:default}
+.unshad{box-shadow:0 0 7px gray;cursor:pointer}
+#da.seshad,#ni.seshad{pointer-events:none}
+
+.gragre{background:var(--select-shadow);
+background:radial-gradient(circle farthest-corner at center center, var(--select-shadow) 0%, var(--p) 70%);
+background-clip:text;text-fill-color:transparent;
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+font-size:150%}
+
+#set_keys label{font-size:70%}
+#set_keys .col1 label{text-align:right}
+#set_keys .colA div{display:flex;align-items:center}
+#set_keys .colA label{display:flex;align-items:center;justify-content:flex-end;text-align:end}
+#set_keys b{
+ display:inline-block;position:relative;
+ min-width:30px;line-height:30px;font-size:26px;font-family:sans-serif;
+ padding:4px;margin:4px;
+ text-align:center;letter-spacing:0;
+ border:1px solid gray;border-radius:6px;
+ box-shadow:2px 2px 3px gray;
+ color:#555;background-color:#e2e2e2;
+}
+#set_keys b.k{min-width:26px;line-height:16px;font-size:16px;margin-right:-6px}
+#set_keys b.k + b{line-height:24px;font-size:24px}
+#set_keys b span{display:inline-block;line-height:0;height:12px;vertical-align:middle}
+#set_keys b i{font-family:serif;font-size:6px;line-height:5px}
+#set_keys b.e{width:90px;max-width:100%}
+#set_keys b.r,#set_keys b.l,#set_keys b.sr,#set_keys b.sl,#set_keys b.sb,#set_keys b.st,#set_keys b.c{min-width:40px;border-radius:0;box-shadow:-2px 2px 3px gray}
+#set_keys b.r{text-align:left;background:linear-gradient(90deg, #e2e2e2 0%, #e2e2e2 45%, #baffba 55%, #baffba 100%)}
+#set_keys b.l{text-align:right;background:linear-gradient(90deg, #baffba 0%, #baffba 45%, #e2e2e2 55%, #e2e2e2 100%)}
+#set_keys b.ml::after,#set_keys b.ml::after{content:'🖱️';position:absolute; right:-30%;bottom:-10px;border-radius:30%;padding:3px 0;box-shadow: inset 3px 3px 0 -3px #555, -3px -3px 0 -3px #555;border:2px solid transparent}
+#set_keys b.ml.l::after{right:unset;left:3px}
+#set_keys b.sr,#set_keys b.sl,#set_keys b.sb,#set_keys b.st{background:#baffba}
+#set_keys b.sr i,#set_keys b.sl i,#set_keys b.sb i,#set_keys b.st i{font-size:12px;line-height:12px;vertical-align:top;color:#3f8ad9}
+#set_keys b.sr::after{content:'👉️';position:absolute;bottom:-2px;right:5px;transform:rotate(-45deg)}
+#set_keys b.sl::after{content:'👈️';position:absolute;bottom:-2px;left:5px;transform:rotate(45deg)}
+#set_keys b.sb::after{content:'👉️';position:absolute;bottom:-4px;left:-5px;transform:rotate(25deg)}
+#set_keys b.st::after{content:'👉️';position:absolute;bottom:5px;left:-5px;transform:rotate(-25deg)}
+#set_keys b.sb i{display:inline-block;margin-top:5px;transform:rotate(90deg)}
+#set_keys b.st i{display:inline-block;margin-top:10px;transform:rotate(90deg)}
+#set_keys b.c i{position:absolute;width:30%;height:40%;right:0;left:0;bottom:0;top:0; margin:auto;background:#baffba}
+#set_keys b.c::after{content:'👆️';position:absolute;bottom:-9px;right:5px}
+#set_keys b.btn{line-height:22px;font-size:16px;height:30px;width:30px;background-color:unset;
+    box-shadow: 0 5px 2px -2px grey,inset 24px 0 24px -24px var(--s), inset -24px 0 24px -24px var(--s)}
+#set_keys b.btn::first-letter{ font-size:22px;vertical-align:8px;letter-spacing:-20px}
+button{font-size:1em}
+</style>
+
+<details><summary id="set_iface" rel="🤲️"></summary>
+ <div class="col1"><label for="l"></label>
+ <select id="l" onchange="setChange([this])" name="styls">
+  <option value="_"></option>
+  <option value="en">English</option>
+  <option value="ru">Русский</option>
+ </select>
+ </div>
+ <div><label for="w"></label>
+ <input type="range" id="w" value="60" step="1" min="20" max="100" alt="%" onchange="avwSet(this)" name="styls">
+ </div>
+ <div class="colA" id="set_theme">
+  <div onclick="avcToday('day',this)" id="da" name="styls"><i></i></div>
+  <div onclick="avcToday('night',this)" id="ni" name="styls"><i></i></div>
+  <div id="b" name="styls">
+   <span id="c" name="styls"></span>
+   <span>
+    <input type="color" id="cpi">
+    <input type="color" id="bpi">
+   </span>
+  </div>
+ </div>
+ <div id="indef">
+  <span></span>&nbsp;<button onclick="inDef()"></button>
+ </div>
+</details>
+<details id="set_pips" class="with_db sel2sel"><summary rel="👤️" onclick="setPT(this.parentNode,pip)"></summary>
+</details>
+<details id="set_tags" class="with_db sel2sel"><summary rel="🎟️" onclick="setPT(this.parentNode,tga)"></summary>
+</details>
+<details id="set_keys"><summary rel="🖕️"></summary>
+ <div class="col1"><label for='next'></label>
+  <div>
+   <b class="sl"><i>⟸</i></b>|<b class="r">👉️</b>|<b class="r ml">&nbsp;</b>|<b><span>→</span></b>|<b><i>Page</i>⮯<i>Down</i></b>|<b class="e">␣</b>
+  </div>
+ </div>
+ <div class="col1"><label for='prev'></label>
+  <div>
+   <b class="sr"><i>⟹</i></b>|<b class="l">👈️</b>|<b class="l ml">&nbsp;</b>|<b><span>←</span></b>|<b><i>&nbsp;Page</i>⮬<i>&nbsp;Up&nbsp;&nbsp;</i></b>
+  </div>
+ </div>
+ <div class="colA"><label for='navi'></label>
+  <div>
+   <b class="k">Alt</b><b>N</b>|<b class="c">&nbsp;<i></i></b>|<b>↓</b>
+  </div>
+ </div>
+ <div class="colA"><label for='boss'></label>
+  <div>
+   <b class="k">Alt</b><b>B</b>|<b class="btn">📃📚</b>|<b>↑</b>|<b class="sb"><i>⟹</i></b>
+  </div>
+ </div>
+ <div class="colA"><label for='mark'></label>
+  <div>
+   <b class="k">Alt</b><b>R</b>|<b class="btn">📑🌟</b>
+  </div>
+ </div>
+ <div class="colA"><label for='floc'></label>
+  <div>
+   <b class="k">Alt</b><b>L</b>|<b class="btn">💻📖</b>
+  </div>
+ </div>
+ <div class="colA"><label for='fglo'></label>
+  <div>
+   <b class="k">Alt</b><b>G</b>|<b class="btn">🌐️📖</b>
+  </div>
+ </div>
+ <div class="colA"><label for='sets'></label>
+  <div>
+   <b class="k">Alt</b><b>S</b>|<b class="btn">⚙️💡️</b>
+  </div>
+ </div>
+ <div class="colA"><label for='cont'></label>
+  <div>
+   <b class="k">Alt</b><b>C</b>
+  </div>
+ </div>
+ <div class="colA"><label for='menu'></label>
+  <div>
+   <b class="k">Alt</b><b>M</b>|<b class="st"><i>⟸</i></b>
+  </div>
+ </div>
+</details>
+<!--#-#-->
+<b></b>
+<input type="text" onchange="savIs()" required>
+<i></i>
+<input type="text" onchange="savIs()"><input type="text" onchange="savIs()"><input type="text" onchange="savIs()"><input type="text" onchange="savIs()"><input type="text" onchange="savIs()">
+<b id="auth_ownl"></b>
+<div id="book_auths" class="sel2sel"></div>
+<b id="tag_ownl"></b>
+<div id="book_tags" class="sel2sel"></div>
+<div id="book_cover"><b></b> <input type="file" onchange="preCov()"><br>
+<img class="own"> <img src="" class="new"> <span onclick="cleCov();this.classList.add('dn')" class="dn">🔘</span>
+</div>
+<footer><div class="btn" onclick="savEbk(event,true)" disabled>📄✅</div></footer>
+<!--#-#-->
+<header>
+    <span onclick="newPT(getPT(this))" class="gragre">⊕</span>
+    <span onclick="getOp(getPT(this),true,ediObj)">📝</span>
+    <span onclick="merPT(getPT(this))" class="merg">🪢</span>
+    <span onclick="clOp(getPT(this))">🔘</span>
+</header>
+<select multiple name="ownl"></select>
+<footer>
+    <div onclick="amoPT(this)">️<span></span><div class="dn">📚</div><div class="dn">🗑️</div></div>
+    <div onclick="seL(getPT(this),'list','add','ownl',true)" class="tro add" disabled>️⬅</div>
+    <div onclick="seL(getPT(this),'ownl','delete','list',false)" class="tro rem" disabled>️➡</div>
+</footer>
+<select multiple name="list"></select>

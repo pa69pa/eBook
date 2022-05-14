@@ -1,0 +1,47 @@
+{
+ "text":{
+  "#set_iface":"Interface"
+ ,"label[for='l']":"Language"
+ ,"#l option:first-of-type":"from Navigator"
+ ,"label[for='w']":"Width of page"
+ ,"#c":"Custom colors"
+ ,"#da i":"Day light"
+ ,"#ni i":"Night dark"
+ ,"#set_pips summary":"Persons"
+ ,"#set_tags summary":"Tags"
+ ,"#set_keys summary":"Control"
+ ,"label[for='next']":"Next page"
+ ,"label[for='prev']":"Previous page"
+ ,"label[for='navi']":"Contents page +Menu"
+ ,"label[for='cont']":"Contents page"
+ ,"label[for='menu']":"Show/close menu"
+ ,"label[for='boss']":"To book list"
+ ,"label[for='mark']":"Make bookmark"
+ ,"label[for='sets']":"Open settings window"
+ ,"label[for='fglo']":"Open global file"
+ ,"label[for='floc']":"Open local file"
+ ,"#indef span":"to default set"
+ ,"#indef button":"clear"
+ ,"#ebk > b":"Title"
+ ,"#ebk i":"Subtitles"
+ ,"#auth_ownl":"Authors"
+ ,"#tag_ownl":"Ganres"
+ ,"#book_cover > b":"Cover"
+ ,"dialog span":"replace under tag"
+ }
+,"title":{
+  "#ebk > div":"Close edit window"
+ }
+,"placeholder":{
+  "input[required]":"required field"
+ }
+,"sav":"❓️ Save"
+,"req":"field for required fills"
+,"pipls":"Create new person with name"
+,"tags":"Create new tag"
+,"un":"under tag"
+,"cn":"No more than one option in the list"
+,"cm":"Select at least two items to merge"
+,"cc":"New name for the merge"
+,"ot":"on top"
+}
