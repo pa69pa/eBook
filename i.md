@@ -1,4 +1,4 @@
-Example book «i.epub»
+Example book [«i.epub»](i.epub)
 
 open with https://pa69pa.github.io/eBook?i.epub
 

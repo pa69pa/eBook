@@ -100,17 +100,17 @@
 
 #treeChild()
 ================================
-function treeChilds(pt,e,f=-1,ix,ox,ex,k) \\ pt.list.childNodes.forEach(item=>{...})
-					<<< pt = `tga` object
- 					<<< e = root <option> about tree
- 					<<< f = 0 (only from titObj{}) | = function callback() from dialog() | = -1 for never call f()
- 					<<< ix = 1 | Set{} if need return array of childs item's — ix.add(item)
- 					<<< ox = true if include in `ix` self item
- 					<<< ex = Set{} excludes key's from merPT() == not call f() at this key's
-					<<< param k = true to `ex` collect key's instead items ix.add(item.DB.id)
+function treeChilds(pt,e,f=-1,ix,ox,ex,k) \\\ pt.list.childNodes.forEach(item=>{...})
+-					<<< pt = `tga` object
+- 					<<< e = root <option> about tree
+- 					<<< f = 0 (only from titObj{}) | = function callback() from dialog() | = -1 for never call f()
+- 					<<< ix = 1 | Set{} if need return array of childs item's — ix.add(item)
+- 					<<< ox = true if include in `ix` self item
+- 					<<< ex = Set{} excludes key's from merPT() == not call f() at this key's
+-					<<< param k = true to `ex` collect key's instead items ix.add(item.DB.id)
 >>> return: [] all childs starting with `e` if f!=0 <<OR>> [string_name_all_sample_tree,[array_child]] if f==0
-if present function `f` — call f(item) at NOT self `e` and NOT alls childs `e` — on every rest items
-if present f() and ex{} — NOT call f(item) if !ex.has(item.DB.id)
+- if present function `f` — call f(item) at NOT self `e` and NOT alls childs `e` — on every rest items
+- if present f() and ex{} — NOT call f(item) if !ex.has(item.DB.id)
 
 	function reP(o,e,pt)
 		===> treeChilds(pt,e,-1,1,true|false)// replace item with childs | only childs &>> return array all|childs items return
