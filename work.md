@@ -99,7 +99,7 @@
 - `fr.v` = true then <iframe> on hide transition
 
 
-# treeChild()
+# treeChilds()
 
 function treeChilds(pt,e,f=-1,ix,ox,ex,k) \\\ pt.list.childNodes.forEach(item=>{...})
 - `pt` = `tga` object
