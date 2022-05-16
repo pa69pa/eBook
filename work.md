@@ -1,7 +1,6 @@
-	OBJECTS
-================================
+#OBJECTS
 
-# o = addFigObject{} | dt.b | <figure id="bXXX" name="books"> == describe one book
+## o = addFigObject{} | dt.b | <figure id="bXXX" name="books"> == describe one book
 - `o.id` = 'b' + primary key from DB | temporary key (<0) on added new book - set into addBook()
 - `o.DB` = {} object "books" into DB
 
@@ -22,7 +21,7 @@
 - `o.d` = directory with index.html into zip-file
 - `o.m` = timestamp unzip-message
 
-# object "books" into DB
+## object "books" into DB
 - `id` = primaryKey ## autoincrement
 - `src` = string name of local file | global url
 - `raw` = ArrayBuffer of the book = epub|zip|string
@@ -39,7 +38,7 @@
 - `dat` = Date.now() last reading date ## index 'dats'
 - `last` = the same {} object "marks" without `id`, `book`, `file`, `name`, `targ` and `idx`
 
-# object "marks" into DB
+## object "marks" into DB
 - `id` = date of marks = Date.now() ## primaryKey
 - `book` = key from object "books" ## index 'books'
 - `name` = named mark | selected string | null with `targ` ## index 'nams'
@@ -53,20 +52,20 @@
 - `a` = number of pages in current <html>-file into iframe
 - `p` = percents readed book throw all files ## index 'pers'
 
-# object "pipls" into DB
+## object "pipls" into DB
 - `id` = primaryKey ## autoincrement
 - `name` = string name ## index 'nams' unique
 
-# object "tags" into DB
+## object "tags" into DB
 - `id` = primaryKey ## autoincrement
 - `pa` = parent item key ## index 'pars'
 - `name` = string tag name ## index 'nams' ## index 'pana' compaund `pa`+`name` unique
 
-# object "styls" into DB
+## object "styls" into DB
 - "id" = string key ## primaryKey
 - "val" = string value to key
 
-# dt{}
+## dt{}
 - `dt.r` = style of cssRule `:root{}`
 - `dt.v` = {} localize vocabulary for ebook.html <== ebook.{lang}.json
 - `dt.w` = {} localize vocabulary for ebook.set.html <== ebook.set.{lang}.json
@@ -75,7 +74,7 @@
 - `dt.z` = string name current open file NOT from `dt.b.DB.spine` but on `dt.b.ZIP.files` <— return to undefined value at moveOver()
 - `dt.zmark` = {x:1,targ:<a>} set at goHref() &go zipFile() ==> for moveOver() & ... setPage(setTarg()) — return to spine from non-spine zip-file
 
-# wh{} <= all is integer
+## wh{} <= all is integer
 		// init at reSume()
 		// wh.x & wh.s & wh.a correct at onSrc() on load iframe
 		// wh.x correct at setPage() & setTarg() on goto mark
@@ -89,7 +88,7 @@
 - `wh.t` = top field for click
 - `wh.b` = bottom field for click
 
-# fr{} — all about document from iframe <== set at onSrc()
+## fr{} — all about document from iframe <== set at onSrc()
 - `fr.d` = <document>
 - `fr.h` = <html>
 - `fr.s` = <html>.style
@@ -99,20 +98,21 @@
 
 
 #treeChild()
-================================
+
 function treeChilds(pt,e,f=-1,ix,ox,ex,k) \\\ pt.list.childNodes.forEach(item=>{...})
-- pt = `tga` object
-- e = root <option> about tree
-- f = 0 (only from titObj{}) | = function callback() from dialog() | = -1 for never call f()
-- ix = 1 | Set{} if need return array of childs item's — ix.add(item)
-- ox = true if include in `ix` self item
-- ex = Set{} excludes key's from merPT() == not call f() at this key's
-- param k = true to `ex` collect key's instead items ix.add(item.DB.id)
+- `pt` = `tga` object
+- `e` = root <option> about tree
+- `f` = 0 (only from titObj{}) | = function callback() from dialog() | = -1 for never call f()
+- `ix` = 1 | Set{} if need return array of childs item's — ix.add(item)
+- `ox` = true if include in `ix` self item
+- `ex` = Set{} excludes key's from merPT() == not call f() at this key's
+- `k` = true to `ex` collect key's instead items ix.add(item.DB.id)
 >>> return: [] all childs starting with `e` if f!=0 <<OR>> [string_name_all_sample_tree,[array_child]] if f==0
 - if present function `f` — call f(item) at NOT self `e` and NOT alls childs `e` — on every rest items
 - if present f() and ex{} — NOT call f(item) if !ex.has(item.DB.id)
 
-=====>>>
+=====>>> Where treeChilds() Using ===
+
 	function reP(o,e,pt)
 		===> treeChilds(pt,e,-1,1,true|false)// replace item with childs | only childs &>> return array all|childs items return
 
@@ -159,10 +159,9 @@ return new_parent
 5. reM() — upDate(pt.arrMer) — replace reP() all it's childs under elect and delete pt.delMer
 
 
-	HELP
-================================
+#HELP
 
-# indexDB
+### indexDB
 * ALL
 https://learn.javascript.ru/indexeddb
 * createIndex{multiEntry:true}
@@ -174,21 +173,21 @@ https://developer.mozilla.org/en-US/docs/Web/API/IDBCursor/direction
 https://www.codeproject.com/Articles/744986/How-to-do-some-magic-with-indexedDB
 https://itnext.io/searching-in-your-indexeddb-database-d7cbf202a17
 
-# JSZip
+### JSZip
 https://stuk.github.io/jszip/documentation/howto/read_zip.html
 
-# Canvas
+### Canvas
 https://developer.mozilla.org/ru/docs/Web/API/HTMLCanvasElement
 https://developer.mozilla.org/ru/docs/Web/API/CanvasRenderingContext2D
 
-# Blob
+### Blob
 https://flaviocopes.com/blob/
 
-# Промисы > Микрозадачи
+### Промисы > Микрозадачи
 https://learn.javascript.ru/async
 https://learn.javascript.ru/microtask-queue
 
-# epub
+### epub
 https://gist.github.com/stormwild/86673836eb6153e6ab2e65b4353a289e
 
 📚📓️📔️📘️👤️🎟️📑🖱️💻🌐📖📄📃🧾🗒💳📒🔖🔍📝🔗🖇️🧷🪢🗑️📎💬📍📌️🚩📂📁🗃🎯🎲🧩🪄✨
