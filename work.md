@@ -136,6 +136,7 @@ function treeChilds(pt,e,f=-1,ix,ox,ex,k) \\\ pt.list.childNodes.forEach(item=>{
 
 === example ===
 |ownl| list|<<<<)`item select sign`|
+|---|---|---|
 |{id:1, pa:5}|{id:3, pa:0}||
 ||{id:5, pa:3}|<<<<<)delete|
 |{id:1, pa:5}||<<<<<)elect|
@@ -154,7 +155,7 @@ return new_parent
 1. array first childs under delete items (without elect) pt.arrMer=[2,6]
 2. all tags in all books change [5,4] to 1 ==> upDate(books)
 3. if(reName || rePlace) upDate(elect) & replace it with childs id=[1,10] under new_parent AND reM()
-4. 				else reM()
+4. else reM()
 5. reM() — upDate(pt.arrMer) — replace reP() all it's childs under elect and delete pt.delMer
 
 
