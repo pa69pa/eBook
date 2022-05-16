@@ -1,4 +1,6 @@
-#OBJECTS
+### [Full sircle algorithm Open&Update&Add](openUpdateAdd.svg)
+
+# OBJECTS
 
 ## o = addFigObject{} | dt.b | <figure id="bXXX" name="books"> == describe one book
 - `o.id` = 'b' + primary key from DB | temporary key (<0) on added new book - set into addBook()
@@ -97,7 +99,7 @@
 - `fr.v` = true then <iframe> on hide transition
 
 
-#treeChild()
+# treeChild()
 
 function treeChilds(pt,e,f=-1,ix,ox,ex,k) \\\ pt.list.childNodes.forEach(item=>{...})
 - `pt` = `tga` object
@@ -159,7 +161,7 @@ return new_parent
 5. reM() — upDate(pt.arrMer) — replace reP() all it's childs under elect and delete pt.delMer
 
 
-#HELP
+# HELP
 
 ### indexDB
 * ALL
