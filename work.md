@@ -101,17 +101,18 @@
 #treeChild()
 ================================
 function treeChilds(pt,e,f=-1,ix,ox,ex,k) \\\ pt.list.childNodes.forEach(item=>{...})
--					<<< pt = `tga` object
-- 					<<< e = root <option> about tree
-- 					<<< f = 0 (only from titObj{}) | = function callback() from dialog() | = -1 for never call f()
-- 					<<< ix = 1 | Set{} if need return array of childs item's — ix.add(item)
-- 					<<< ox = true if include in `ix` self item
-- 					<<< ex = Set{} excludes key's from merPT() == not call f() at this key's
--					<<< param k = true to `ex` collect key's instead items ix.add(item.DB.id)
+- pt = `tga` object
+- e = root <option> about tree
+- f = 0 (only from titObj{}) | = function callback() from dialog() | = -1 for never call f()
+- ix = 1 | Set{} if need return array of childs item's — ix.add(item)
+- ox = true if include in `ix` self item
+- ex = Set{} excludes key's from merPT() == not call f() at this key's
+- param k = true to `ex` collect key's instead items ix.add(item.DB.id)
 >>> return: [] all childs starting with `e` if f!=0 <<OR>> [string_name_all_sample_tree,[array_child]] if f==0
 - if present function `f` — call f(item) at NOT self `e` and NOT alls childs `e` — on every rest items
 - if present f() and ex{} — NOT call f(item) if !ex.has(item.DB.id)
 
+=====>>>
 	function reP(o,e,pt)
 		===> treeChilds(pt,e,-1,1,true|false)// replace item with childs | only childs &>> return array all|childs items return
 
@@ -133,28 +134,28 @@ function treeChilds(pt,e,f=-1,ix,ox,ex,k) \\\ pt.list.childNodes.forEach(item=>{
 		===> treeChilds(pt,i,-1,eix,false,null,true)//KEYS alls childs of alls selected items to eix{}
 		===> dialog('Merge?',f,{re:true,un:true},eix,t.length>0?t[0].treeParent:undefined)
 
-
-		ownl            list					<<<<)`item select sign`
-	{id:1, pa:5}    {id:3, pa:0}
-       		            {id:5, pa:3}            <<<<<)delete
-      		                {id:1, pa:5} (gray) <<<<<)elect
-								{id:10, pa:1}
-       		                {id:2, pa:5}
-       		                    {id:7, pa:2}
-       		        {id:4, pa:0}                <<<<<)delete
-       		            {id:6, pa:4}
-					{id:8, pa:0}
-						{id:9, pa:8}
+=== example ===
+|ownl| list|<<<<)`item select sign`|
+|{id:1, pa:5}|{id:3, pa:0}||
+||{id:5, pa:3}|<<<<<)delete|
+|{id:1, pa:5}||<<<<<)elect|
+||{id:10, pa:1}|
+|{id:2, pa:5}|
+||{id:7, pa:2}|
+|{id:4, pa:0}||<<<<<)delete|
+||{id:6, pa:4}|
+|{id:8, pa:0}|
+||{id:9, pa:8}|
 
 in dialog present as possible parent choise (for replace) items with id: 3, 8, 9 and item with id=3 will be selected
 return new_parent
-has: array for delete pt.delMer=[5,4]
-run:
-	1. array first childs under delete items (without elect) pt.arrMer=[2,6]
-	2. all tags in all books change [5,4] to 1 ==> upDate(books)
-	3. if(reName || rePlace) upDate(elect) & replace it with childs id=[1,10] under new_parent AND reM()
-	4. 				else reM()
-	5. reM() — upDate(pt.arrMer) — replace reP() all it's childs under elect and delete pt.delMer
+- has: array for delete pt.delMer=[5,4]
+- run:
+1. array first childs under delete items (without elect) pt.arrMer=[2,6]
+2. all tags in all books change [5,4] to 1 ==> upDate(books)
+3. if(reName || rePlace) upDate(elect) & replace it with childs id=[1,10] under new_parent AND reM()
+4. 				else reM()
+5. reM() — upDate(pt.arrMer) — replace reP() all it's childs under elect and delete pt.delMer
 
 
 	HELP
