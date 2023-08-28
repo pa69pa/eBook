@@ -280,6 +280,8 @@ const ifr=document.querySelector("iframe"),
  hah=document.getElementById("hah"),
  msg=document.getElementById("msg"),
  fr={};//all about document inside iframe - fill into onSrc()
+fr.gap='20px';//gap beetwen columns
+const gap=20;//shift about gap beetwen columns
 function dhtml(s=''){return "data:text/html,<!doctype html><html><head><meta charset='utf-8'></head><body>"+s+"</body></html>"};
 function dimg(t='📓️'){return "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><text x='-.14em' y='.9em' font-size='90' outline='0'>"+t+"</text></svg>"};
 var ebk,pip,tga
@@ -395,8 +397,8 @@ async function onSrc(){cl("onSrc() iframe load",ifr.src);
     fr.s.display='table';fr.s.width='100%';
     fr.b.display='table-cell';fr.b.textAlign='center';fr.b.verticalAlign='middle'
  }else{
-    fr.s.width='calc(200% + 20px)';
-    fr.s.columns=2;fr.s.columnGap='20px';fr.s.columnFill='auto';
+    fr.s.width='calc(200% + '+fr.gap+')';
+    fr.s.columns=2;fr.s.columnGap=fr.gap;fr.s.columnFill='auto';
  }
 
  fr.r = fr.h.appendChild(fr.d.createElement("style")).sheet;
@@ -433,7 +435,7 @@ async function onSrc(){cl("onSrc() iframe load",ifr.src);
 
  wh.x=0;
  wh.s=fr.d.body.getBoundingClientRect().width;
- wh.a=fix((wh.s+12)/(wh.w+12));cl('onSrc() AFTER AWAIT IMGs wh.x,s,a=',wh.x,wh.s,wh.a);
+ wh.a=fix((wh.s+gap)/(wh.w+gap));cl('onSrc() AFTER AWAIT IMGs wh.x,s,a=',wh.x,wh.s,wh.a);
 
  let m = dt.b.mark==undefined;
  if(!m)setPage(); else fot.set(0);
@@ -467,27 +469,30 @@ function reSume(){
  let p=0;//p = current page number BEFORE resize from 0 to -1, -2, -3, ...
  wh.x=0;
  wh.s=wh.w;
- wh.w=ifr.getBoundingClientRect().width;
+ wh.w=getComputedStyle(ifr);
+ wh.w=parseFloat(wh.w.getPropertyValue("border-left-width").replace('px',''))+parseFloat(wh.w.getPropertyValue("border-right-width").replace('px',''));
+ wh.w=ifr.getBoundingClientRect().width-wh.w;
 
  if(fr.d){
   wh.h=fr.h.clientHeight;
   let r = fr.d.body.getBoundingClientRect();//cl('reSume() BoundingClientRect',r);
   wh.s = r.width;
   wh.x = r.x;
-  p=fix((wh.x / (wh.w + 12)))
-  //console.log("reSume() if(fr.d) wh.x=",wh.x,'wh.w=',wh.w,'p=',p);
+  p=fix((wh.x / (wh.w + gap)))
+  console.log("reSume() if(fr.d) wh.x=",wh.x,'wh.w=',wh.w,'p=',p);
  }
  if(p < 0){//console.log('reSume() not first page wh.x=',wh.x,'p=',p)
-   wh.x = (wh.w+12)*p;
+   wh.x = (wh.w+gap)*p;
    fr.s.marginLeft = wh.x+'px';
    fot.file()
  }
- wh.a=fix((wh.s+12)/(wh.w+12));
+ wh.a=fix((wh.s+gap)/(wh.w+gap));
  if(wh.a+p<1){//cl('reSume() last EMPTY page')
-  wh.x=wh.x+(wh.w+12);
+  wh.x=wh.x+(wh.w+gap);
   fr.s.marginLeft = wh.x+'px';
   fot.file()
- }console.log('reSume() result: wh.x,s,w,a',wh.x,wh.s,wh.w,wh.a);
+ }
+ console.log('reSume() RESULT: wh.x,s,w,a',wh.x,wh.s,wh.w,wh.a);
 
  if(ifr.src){fot.book('S');navMark(-1)}
 }
@@ -518,15 +523,15 @@ function cB(e){/** click on document with iframe */
   else movePage(1)
 }
 /** animation change page: n=-1 -> move to next; n=1 <- previous */
-function movePage(n){//cl('movePage() n=',n)
+function movePage(n){cl('movePage() ||||||||||||||||||||| n=',n)
  if(n=='ArrowRight' || n=='PageDown' || n=='32')n=-1;
  if(n=='ArrowLeft' || n=='PageUp')n=1;
- const l = wh.x+n*(wh.w+12);
+ const l = wh.x+n*(wh.w+gap);
  let i=moveOver(l);
  if(i==null)return;//cl('movePage() from',fr.s.marginLeft,'to',l);
  fr.h.classList.add('move');
 ///////// fr.l.classList.add('f'+ (n>0 ? 'r' : 'l'));
- fr.s.marginLeft=l+'px';
+ fr.s.marginLeft=l+'px';cl('movePage() ||||||||||||| l,x,w=',l,wh.x,wh.w)
  if(i>-1){//go to next\prev FILE
   fr.v=true;//cl('movePage() fr.v=',fr.v);
   sh.hid('IFRAME');
@@ -664,12 +669,12 @@ param e = {...} custom mark (object return navMark())
 function setPage(e={}){cl('setPage() dt.b.mark=',dt.b.mark);
  if(!dt.b.mark){//==false from moveOver() — go previous file == on last page
     e.p=100;
-    e.x=-1*(wh.a-1)*(wh.w+12);//new marginLeft for the last page number
+    e.x=-1*(wh.a-1)*(wh.w+gap);//new marginLeft for the last page number
  }else{
   if(Object.keys(e).length<1)e = typeof dt.b.mark === 'boolean' ? dt.b.DB.last : dt.b.mark;cl('setPage() e=',e,' dt.b=',[dt.b]);
   if(e.x<0){
-    let p=e.x/(e.w+12);//old current page = -int
-    e.x=p*(wh.w+12);//new marginLeft for the same page number
+    let p=e.x/(e.w+gap);//old current page = -int
+    e.x=p*(wh.w+gap);//new marginLeft for the same page number
 
     if(e.w!=wh.w || e.h!=wh.h || e.a!=wh.a){// changed width-heigh-size\font-size\and other
         if(e.targ)setTarg(e);
@@ -697,8 +702,8 @@ function setTarg(e){//cl('setTarg('+e.targ+')');
     t.setStart(c,i);
     t.setEnd(c,i);
  }
- let p=Math.ceil((fr.d.body.getBoundingClientRect().x-t.getBoundingClientRect().x)/(wh.w+12))-1;//page number where targ|range
- e.x=p*(wh.w+12);
+ let p=Math.ceil((fr.d.body.getBoundingClientRect().x-t.getBoundingClientRect().x)/(wh.w+gap))-1;//page number where targ|range
+ e.x=p*(wh.w+gap);
  e.p=p*-100/wh.a;cl('setTarg() new e.x=',e.x,p,e.p,t.getBoundingClientRect().x);
 }
 /** set if needed Book, File, Page
@@ -859,7 +864,7 @@ fot.set = (i)=>{//draw progress line
  fot.style.background='linear-gradient(to right, var(--p) '+i+'%, transparent '+i+'%';
 };
 fot.file = ()=>{//set progress on current open file
- fot.set(-100*wh.x/(wh.s-wh.w-12))
+ fot.set(-100*wh.x/(wh.s-wh.w-gap))
 };
 fot.book = (t)=>{//draw bump for every file into book
  //cl('fot.book('+t+') dt.c='+dt.c+' child='+fot.hasChildNodes()+'=',dt.b.prs)
@@ -934,7 +939,7 @@ function loadScript(doc,src,cbk){
  t.src = src;
  doc.head.appendChild(t);
 }
-function fix(n,f=0){
+function fix(n,f=0){cl('FIX '+n+' to ('+f+') =',n.toFixed(f))
     return +n.toFixed(f);
 }
 /** <span id="msg"></span> == set inner html & time for messaging
