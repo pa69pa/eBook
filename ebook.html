@@ -471,7 +471,7 @@ function reSume(){
  wh.s=wh.w;
  wh.w=getComputedStyle(ifr);
  wh.w=parseFloat(wh.w.getPropertyValue("border-left-width").replace('px',''))+parseFloat(wh.w.getPropertyValue("border-right-width").replace('px',''));
- wh.w=ifr.getBoundingClientRect().width-wh.w;
+ wh.w=ifr.getBoundingClientRect().width-wh.w-0.05;
 
  if(fr.d){
   wh.h=fr.h.clientHeight;
@@ -523,7 +523,7 @@ function cB(e){/** click on document with iframe */
   else movePage(1)
 }
 /** animation change page: n=-1 -> move to next; n=1 <- previous */
-function movePage(n){cl('movePage() ||||||||||||||||||||| n=',n)
+function movePage(n){//cl('movePage() n=',n);
  if(n=='ArrowRight' || n=='PageDown' || n=='32')n=-1;
  if(n=='ArrowLeft' || n=='PageUp')n=1;
  const l = wh.x+n*(wh.w+gap);
@@ -531,7 +531,7 @@ function movePage(n){cl('movePage() ||||||||||||||||||||| n=',n)
  if(i==null)return;//cl('movePage() from',fr.s.marginLeft,'to',l);
  fr.h.classList.add('move');
 ///////// fr.l.classList.add('f'+ (n>0 ? 'r' : 'l'));
- fr.s.marginLeft=l+'px';cl('movePage() ||||||||||||| l,x,w=',l,wh.x,wh.w)
+ fr.s.marginLeft=l+'px';//cl('movePage() l,x,w=',l,wh.x,wh.w);
  if(i>-1){//go to next\prev FILE
   fr.v=true;//cl('movePage() fr.v=',fr.v);
   sh.hid('IFRAME');
