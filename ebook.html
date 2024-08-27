@@ -364,7 +364,8 @@ function set0(){//cl('SET 00000')
  checkDB(false);
  setDef()
 };
-if(window.location.search){globalFile(window.location.search.slice(1))};
+let globalHere=false;
+if(window.location.search){globalHere=true};
 
 /////////fr.l=document.createElement('div');
 /////////fr.l.id='list';
@@ -434,7 +435,8 @@ async function onSrc(){cl("onSrc() iframe load",ifr.src);
  fr.d.querySelectorAll("div, video, audio, main, header, footer, nav, menu, span[display='block']").forEach(iWH);
 
  wh.x=0;
- wh.s=fr.d.body.getBoundingClientRect().width;
+ wh.s=compS();
+ wh.w=compW();
  wh.a=fix((wh.s+gap)/(wh.w+gap));cl('onSrc() AFTER AWAIT IMGs wh.x,s,a=',wh.x,wh.s,wh.a);
 
  let m = dt.b.mark==undefined;
@@ -458,7 +460,12 @@ function iWHs(i,w,h){
  i.style.heigh = h ? 'auto' : 'calc(100vh - var(--foot))'
 }
 /** reSume on load window \ after resize window \ changeorientation \ resize <iframe> at setStyle('w') */
+var timerSume;
 function reSume(){
+    if(timerSume)clearTimeout(timerSume);
+    timerSume = setTimeout(compSume, 555);//console.log('timerSume',timerSume)
+    return false}
+function compSume(){console.log('compSume()')
  wh.w=window.innerWidth;
  wh.h=window.innerHeight;
  wh.l=wh.w/3;
@@ -469,18 +476,16 @@ function reSume(){
  let p=0;//p = current page number BEFORE resize from 0 to -1, -2, -3, ...
  wh.x=0;
  wh.s=wh.w;
- wh.w=getComputedStyle(ifr);
- wh.w=parseFloat(wh.w.getPropertyValue("border-left-width").replace('px',''))+parseFloat(wh.w.getPropertyValue("border-right-width").replace('px',''));
- wh.w=ifr.getBoundingClientRect().width-wh.w-0.05;
+ wh.w=compW();
 
  if(fr.d){
   wh.h=fr.h.clientHeight;
   let r = fr.d.body.getBoundingClientRect();//cl('reSume() BoundingClientRect',r);
-  wh.s = r.width;
+  wh.s = compS(r);
   wh.x = r.x;
   p=fix((wh.x / (wh.w + gap)))
-  console.log("reSume() if(fr.d) wh.x=",wh.x,'wh.w=',wh.w,'p=',p);
- }
+  console.log("reSume() if(fr.d) wh.x.w.s=",wh.x,wh.w,wh.s,'p=',p);
+ }else{wh.s=wh.w}
  if(p < 0){//console.log('reSume() not first page wh.x=',wh.x,'p=',p)
    wh.x = (wh.w+gap)*p;
    fr.s.marginLeft = wh.x+'px';
@@ -492,9 +497,24 @@ function reSume(){
   fr.s.marginLeft = wh.x+'px';
   fot.file()
  }
- console.log('reSume() RESULT: wh.x,s,w,a',wh.x,wh.s,wh.w,wh.a);
+ console.log('reSume() RESULT: wh.x,w,s,a',wh.x,wh.w,wh.s,wh.a);
 
  if(ifr.src){fot.book('S');navMark(-1)}
+}
+function compW(){//width column wh.w
+ if(fr.h){
+    if(fr.s.width=='100%') return compWfr();
+    else return (fr.h.getBoundingClientRect().width-gap)/2 //width from style iframe.document.html
+ }else return compWfr()
+}
+function compWfr(){//width iframe without borders
+    let b=getComputedStyle(ifr);
+    b=parseFloat(b.getPropertyValue("border-left-width"))+parseFloat(b.getPropertyValue("border-right-width"));
+    return ifr.getBoundingClientRect().width-b;
+}
+function compS(t){
+    if(!t)t=fr.d.body.getBoundingClientRect();
+    return t.width
 }
 /** ************************ Animation Move Pages *********************** */
 function cF(e){/** click on iframe */
@@ -592,6 +612,7 @@ function navMark(h=0,d=false,l=true){
     getSel(s);
     if(!s.name)s.name=dt.v.bm+' '+document.querySelectorAll('#marks li').length;
  }cl('navMark() '+(h!=0?(h>0?'history.push':'history.replace'):''),s,' dt.b.DB.dat='+dt.b.DB.dat,' dt.b.DB.last=',dt.b.DB.last);
+console.log('COMP S',compS());
  return s;
 }
 /** return selected string | ''
@@ -1017,6 +1038,7 @@ function fetchLang(name,v,l){
   dt[v]=d;
   dt[v].l_=l;cl('DT['+v+']',dt[v]);
   if(d){
+   if(globalHere){ globalHere=false;globalFile(window.location.search.slice(1)) };
    for(let i in d['title']){ document.querySelector(i).title=d['title'][i] };
    for(let i in d['text']){ document.querySelector(i).textContent=d['text'][i] };
    for(let i in d['placeholder']){ document.querySelector(i).setAttribute('placeholder',d['placeholder'][i]) };
@@ -1156,13 +1178,13 @@ let tot = len?parseInt(len,10):null;
 		.then(buf => { let fig = document.createElement("figure");//addFigObject
                         fig.DB={src:u};
                         unZip.call(fig,buf) })
-		.catch(err => console.error('globalFetch() ERROR',err))
+		.catch(err => console.error('globalFetch() ERROR1',err))
 	 }else{
         hah.classList.add('smile')
 	 }
 	}
   }else globalErr(h,u)
- }).catch(err => console.error('globalFetch() ERROR',err))
+ }).catch(err => console.error('globalFetch() ERROR2',err))
 }
 function globalErr(r,u){//cl('globalErr()',r)
  if(r.status==404)setMsg(r.statusText+'<br>'+r.url, 2000);
