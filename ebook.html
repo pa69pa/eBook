@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <!-- Reader with turning pages for local & global files .epub, .zip, .html
- v.2022.05
+ v.2024.08
 project files:
 	ebook.html
 	ebook.en.json (and other localizations for ebook.html)
@@ -279,9 +279,9 @@ const ifr=document.querySelector("iframe"),
  lof=document.getElementById('local_file'),
  hah=document.getElementById("hah"),
  msg=document.getElementById("msg"),
+ gap=20,//shift about gap beetwen columns
  fr={};//all about document inside iframe - fill into onSrc()
-fr.gap='20px';//gap beetwen columns
-const gap=20;//shift about gap beetwen columns
+fr.gap=gap+'px';//gap beetwen columns
 function dhtml(s=''){return "data:text/html,<!doctype html><html><head><meta charset='utf-8'></head><body>"+s+"</body></html>"};
 function dimg(t='📓️'){return "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><text x='-.14em' y='.9em' font-size='90' outline='0'>"+t+"</text></svg>"};
 var ebk,pip,tga
@@ -373,7 +373,7 @@ if(window.location.search){globalHere=true};
 /////////document.body.append(fr.l);
 
 /** on set new src to iframe - from <iframe onload="if(this.src)onSrc()"> */
-async function onSrc(){cl("onSrc() iframe load",ifr.src);
+async function onSrc(){//cl("onSrc() iframe load",ifr.src);
  if(fr.v==undefined){// first & only one times call onSrc()
   dt.r.setProperty('--foot','4px');
   document.body.classList.remove('first_open');
@@ -437,7 +437,7 @@ async function onSrc(){cl("onSrc() iframe load",ifr.src);
  wh.x=0;
  wh.s=compS();
  wh.w=compW();
- wh.a=fix((wh.s+gap)/(wh.w+gap));cl('onSrc() AFTER AWAIT IMGs wh.x,s,a=',wh.x,wh.s,wh.a);
+ wh.a=fix((wh.s+gap)/(wh.w+gap));//cl('onSrc() AFTER AWAIT IMGs wh.x,s,a=',wh.x,wh.s,wh.a);
 
  let m = dt.b.mark==undefined;
  if(!m)setPage(); else fot.set(0);
@@ -465,7 +465,7 @@ function reSume(){
     if(timerSume)clearTimeout(timerSume);
     timerSume = setTimeout(compSume, 555);//console.log('timerSume',timerSume)
     return false}
-function compSume(){console.log('compSume()')
+function compSume(){//console.log('compSume()')
  wh.w=window.innerWidth;
  wh.h=window.innerHeight;
  wh.l=wh.w/3;
@@ -480,24 +480,24 @@ function compSume(){console.log('compSume()')
 
  if(fr.d){
   wh.h=fr.h.clientHeight;
-  let r = fr.d.body.getBoundingClientRect();//cl('reSume() BoundingClientRect',r);
+  let r = fr.d.body.getBoundingClientRect();//cl('comp reSume() BoundingClientRect',r);
   wh.s = compS(r);
   wh.x = r.x;
   p=fix((wh.x / (wh.w + gap)))
-  console.log("reSume() if(fr.d) wh.x.w.s=",wh.x,wh.w,wh.s,'p=',p);
+  //console.log("reSume() if(fr.d) wh.x.w.s=",wh.x,wh.w,wh.s,'p=',p);
  }else{wh.s=wh.w}
- if(p < 0){//console.log('reSume() not first page wh.x=',wh.x,'p=',p)
+ if(p < 0){//console.log('comp reSume() not first page wh.x=',wh.x,'p=',p)
    wh.x = (wh.w+gap)*p;
    fr.s.marginLeft = wh.x+'px';
    fot.file()
  }
  wh.a=fix((wh.s+gap)/(wh.w+gap));
- if(wh.a+p<1){//cl('reSume() last EMPTY page')
+ if(wh.a+p<1){//cl('comp reSume() last EMPTY page')
   wh.x=wh.x+(wh.w+gap);
   fr.s.marginLeft = wh.x+'px';
   fot.file()
  }
- console.log('reSume() RESULT: wh.x,w,s,a',wh.x,wh.w,wh.s,wh.a);
+ //console.log('comp reSume() RESULT: wh.x,w,s,a',wh.x,wh.w,wh.s,wh.a);
 
  if(ifr.src){fot.book('S');navMark(-1)}
 }
@@ -611,8 +611,7 @@ function navMark(h=0,d=false,l=true){
     s.id = Date.now();
     getSel(s);
     if(!s.name)s.name=dt.v.bm+' '+document.querySelectorAll('#marks li').length;
- }cl('navMark() '+(h!=0?(h>0?'history.push':'history.replace'):''),s,' dt.b.DB.dat='+dt.b.DB.dat,' dt.b.DB.last=',dt.b.DB.last);
-console.log('COMP S',compS());
+ }//cl('navMark() '+(h!=0?(h>0?'history.push':'history.replace'):''),s,' dt.b.DB.dat='+dt.b.DB.dat,' dt.b.DB.last=',dt.b.DB.last);
  return s;
 }
 /** return selected string | ''
@@ -687,12 +686,12 @@ function dom(e){/** return string path in DOM-tree from <body> to element <e> ==
 param e = {...} custom mark (object return navMark())
 - from onSrc() and goMark() & goHref() with dt.b.mark != undefined (!!!)
 = SET  dt.b.mark = undefined */
-function setPage(e={}){cl('setPage() dt.b.mark=',dt.b.mark);
+function setPage(e={}){//cl('setPage() dt.b.mark=',dt.b.mark);
  if(!dt.b.mark){//==false from moveOver() — go previous file == on last page
     e.p=100;
     e.x=-1*(wh.a-1)*(wh.w+gap);//new marginLeft for the last page number
  }else{
-  if(Object.keys(e).length<1)e = typeof dt.b.mark === 'boolean' ? dt.b.DB.last : dt.b.mark;cl('setPage() e=',e,' dt.b=',[dt.b]);
+  if(Object.keys(e).length<1)e = typeof dt.b.mark === 'boolean' ? dt.b.DB.last : dt.b.mark;//cl('setPage() e=',e,' dt.b=',[dt.b]);
   if(e.x<0){
     let p=e.x/(e.w+gap);//old current page = -int
     e.x=p*(wh.w+gap);//new marginLeft for the same page number
@@ -725,13 +724,13 @@ function setTarg(e){//cl('setTarg('+e.targ+')');
  }
  let p=Math.ceil((fr.d.body.getBoundingClientRect().x-t.getBoundingClientRect().x)/(wh.w+gap))-1;//page number where targ|range
  e.x=p*(wh.w+gap);
- e.p=p*-100/wh.a;cl('setTarg() new e.x=',e.x,p,e.p,t.getBoundingClientRect().x);
+ e.p=p*-100/wh.a;//cl('setTarg() new e.x=',e.x,p,e.p,t.getBoundingClientRect().x);
 }
 /** set if needed Book, File, Page
 click on BookMark (seted at addMark() or from search()) OR from window.addEventListener('popstate',goMark,false)
 = SET dt.b.mark ----> undef it on setPage()
 param e{} | e.state{} | e.target.DB{} = "marks" objectStore = the same of return navMark() */
-function goMark(e){cl('goMark()',e,'dt.c='+dt.c)
+function goMark(e){//cl('goMark()',e,'dt.c='+dt.c)
  e=e.state?e.state:(e.target?e.target.DB:e);
  if(dt.b && (e.book==dt.b.DB.id || e.book==dt.b.id || 'b'+e.book==dt.b.id)){// mark book already show
     dt.b.mark = {...e};
@@ -784,7 +783,7 @@ dig.con=dig.querySelector('div[name="confirm"]');
 dig.can=dig.querySelector('div[name="cancel"]');
 /** resolve promise from dialog()
 return value = null | string | {} the same `o` from argument dialog(o) */
-dig.res=()=>{cl('dig.res() typeLog=',dig.typeLog,dig.inp.value)
+dig.res=()=>{//cl('dig.res() typeLog=',dig.typeLog,dig.inp.value)
  r=null;k=true;
  if(dig.typeLog==1)r='Y';
  if(dig.typeLog>1){
@@ -832,7 +831,7 @@ examples:
 `prompt(text)` — dialog('Input please','old text').then(r=>{ console.log('new text='+r) })
 `prompt(object text)` — let o={DB:{name:'old text'}}; dialog('Rename please',o,{re:true}).then(o=>{...o.DB.name setted in 'new text' & o.reName setted in true...})
  */
-function dialog(s,o,a={},ex,tp){cl('DIALOG',o,a,ex,tp)
+function dialog(s,o,a={},ex,tp){//cl('DIALOG',o,a,ex,tp)
  dig.typeLog=0;
  dig.lal.innerHTML=s;
  dig.inp.value='';
@@ -862,7 +861,10 @@ function dialog(s,o,a={},ex,tp){cl('DIALOG',o,a,ex,tp)
             n.textContent=i.style.getPropertyValue('--mark-before').slice(1,-1)+i.textContent;
             car(n,0,'ownl');
             dig.sel.appendChild(n);
-            if(i.DB.id==dig.sop || i.DB.id==tp){n.selected=true;k=0;cl('DIA selected=',i.DB.id)}
+            if(i.DB.id==dig.sop || i.DB.id==tp){
+                n.selected=true;k=0;
+                //cl('DIA selected=',i.DB.id)
+            }
         },0,0,ex);
         if(!carr([dig.sel,dig.spa],c)){
             dig.sel.prepend(dig.opt);
@@ -942,7 +944,7 @@ sh.tog = (u,h)=>{//cl('sh.tog('+u+','+h+')');// MAIN NAV MENU
  sh.o[u].toggle('hide');
 };
 sh.togNM = ()=>{// for NAV + MENU
- if(sh.SECTION || !ifr.src)return;cl('sh.togNM() ',sh);
+ if(sh.SECTION || !ifr.src)return;//cl('sh.togNM() ',sh);
  if(nav.classList.contains('dn')){
     mnu.classList.toggle('hide')
  }else if(sh.NAV && sh.MENU)carr([nav,mnu],1,'hide');
@@ -960,7 +962,7 @@ function loadScript(doc,src,cbk){
  t.src = src;
  doc.head.appendChild(t);
 }
-function fix(n,f=0){cl('FIX '+n+' to ('+f+') =',n.toFixed(f))
+function fix(n,f=0){//cl('FIX '+n+' to ('+f+') =',n.toFixed(f))
     return +n.toFixed(f);
 }
 /** <span id="msg"></span> == set inner html & time for messaging
@@ -968,10 +970,10 @@ param s = new message-string | '' for clear now (if present t - clear only keepe
 param t = milisec for timeout before auto clear | null without autoclear
 return timestamp then set not null message */
 function setMsg(s,t){
- if(this.v || (!s && t)){console.log('setMsg() CLEAR',this.v,t,msg.ebookTimeStamp,s);
+ if(this.v || (!s && t)){//console.log('setMsg() CLEAR',this.v,t,msg.ebookTimeStamp,s);
   if(msg.ebookTimeStamp==(this.v || t))msg.innerHTML=''
  }else{
-  const d=Date.now();cl('setMsg() SET',s,t,d);
+  const d=Date.now();//cl('setMsg() SET',s,t,d);
   msg.innerHTML=s;
   msg.ebookTimeStamp=d;
   if(t)setTimeout(setMsg.bind({v:d}), t);
@@ -998,7 +1000,7 @@ param a = {}
 param e = <element>
 param k = false when NOT needed run function setValue() // from ebook.set.js
 */
-function setStyle(a,e,k=true){cl('setStyle',a.id,'=',a.val)
+function setStyle(a,e,k=true){//cl('setStyle',a.id,'=',a.val)
   switch(a.id){
    case "l":
 	 setLang(a.val);
@@ -1036,7 +1038,7 @@ function fetchLang(name,v,l){
 		.then(n => {if(n.ok)return n.json(); else return null}) })
  .then(d => {
   dt[v]=d;
-  dt[v].l_=l;cl('DT['+v+']',dt[v]);
+  dt[v].l_=l;//cl('DT['+v+']',dt[v]);
   if(d){
    if(globalHere){ globalHere=false;globalFile(window.location.search.slice(1)) };
    for(let i in d['title']){ document.querySelector(i).title=d['title'][i] };
@@ -1132,7 +1134,7 @@ function globalFile(u){
  if(!u)dialog(dt.v.u,"http://").then(globalFetch,nul);
  else globalFetch(u)
 }
-function globalFetch(u){cl('globalFetch()',u);
+function globalFetch(u){//cl('globalFetch()',u);
  fetch(u, met('HEAD')).then(h => {
   if(h.ok){//for(var [key, value] of h.headers){cl(`${key} = ${value}`)}
 	let t=h.headers.get('content-type');//cl('globalFile() OK',t)
@@ -1198,7 +1200,7 @@ function globalErr(r,u){//cl('globalErr()',r)
 param f = File
  - from <input type="file" id="local_file" onchange="if(this.files.length>0)localFile(this.files[0])">
  - from dropHand(e) */
-function localFile(f){cl('localFile(f)',f.name,f.type,f)
+function localFile(f){//cl('localFile(f)',f.name,f.type,f)
  let l;
  if(txt.includes(f.type)){
   l = (a)=>{
@@ -1225,7 +1227,7 @@ function localFile(f){cl('localFile(f)',f.name,f.type,f)
 this = addFigObject{} with along this.DB.src = name local zip-file | global url to zip-file
 param a = ArrayBuffer from globalFile() OR Event from localFile()
 - fill addFigObject{} and forward it to epub() | html() */
-function unZip(a){cl('unZip()',this.DB.src)
+function unZip(a){//cl('unZip()',this.DB.src)
  if(a instanceof Event)a=a.target.result;
 
  let zip = new JSZip();
@@ -1303,7 +1305,7 @@ function html(o){
 }
 /** get spine, contents & cover from epub
 param o = addFigObject{} where o.d = string 'META-INF/container.xml' */
-function epub(o){console.log('epub()',o);
+function epub(o){//console.log('epub()',o);
  o.DB.type='epub';
  let to = new fot.To(o.d,o);
  o.ZIP.file(o.d).async("string", m => {to.set(m)}).then(a => {
@@ -1409,7 +1411,7 @@ function epubNav(o,t,n,d){
 }
 /** show book & add figure
 param o = addFigObject{} - from localFile(), globalFile(), html(), epub() */
-function addBook(o){cl('addBook()',o);
+function addBook(o){//cl('addBook()',o);
  setMsg('',o.m);
  o.id = 'b'+( 0 - document.querySelectorAll("main article#read figure").length - 1);
  o.upId = true;
@@ -1427,7 +1429,7 @@ function prepFig(o){// from addBook() & goMark()
 param ob = object "books" from DB run setA() on start session with DB <<<=== dt.b=undefined
 param el = <figure> from set1() <== el.reName=true for rename <figcaption>
 - OR throw addBook(showBook(setSrc()))...onSrc(navMark()) => if(db){ upDate(set1( addFig(ob) )) }else{ setChange( addFig(ob) ) }  <<<=== dt.b=<figure> - set at addBook() */
-function addFig(ob,el){console.log('addFig() ob=',ob,' el=',el,' dt.b=',dt.b)
+function addFig(ob,el){//console.log('addFig() ob=',ob,' el=',el,' dt.b=',dt.b)
 /* if(el && el.isHere){//from setA(setC())
    let k=el.isHere[1].indexOf(ob.id);
    if(k>-1)el=el.isHere[0][k]; else el=document.querySelector('#b'+ob.id)
@@ -1498,7 +1500,7 @@ function figCap(fig,cap){
 /** from [id,id...] make [name,name,...] */
 async function getFigCap(f,c,t,x,arr,obj,fun,l=0){
  x++;
- if(f.DB[arr[x]] && (l = f.DB[arr[x]].length) > 0){cl('getFigCap()',f.DB.title[0],f.DB[arr[x]])
+ if(f.DB[arr[x]] && (l = f.DB[arr[x]].length) > 0){//cl('getFigCap()',f.DB.title[0],f.DB[arr[x]])
     f[arr[x]] = new Array(l);
     let o = t.objectStore(obj[x]);
     await Promise.all(f.DB[arr[x]].map((id,i)=>{
@@ -1510,7 +1512,7 @@ async function getFigCap(f,c,t,x,arr,obj,fun,l=0){
  }else fun[x](f,c,t,x,arr,obj,fun)
 }
 /** from fig.DB.title, fig.auth, fig.tag fill figcaption */
-function titFigCap(f,c){cl('titFigCap() ',f.DB.title)
+function titFigCap(f,c){//cl('titFigCap() ',f.DB.title)
  let s='';
  if(f.tag && f.tag.length>0){
     f.tag.forEach((t,i)=>{s=s+' <span'+( f.DB.tag ? ' name="tag'+f.DB.tag[i]+'"':'' )+'>'+t+'</span>'});
@@ -1560,10 +1562,10 @@ show all marks at showBook()—>setC() >>> addMark(ob,{DB:undefined,reName:undef
 create DB during the session openDB()—>setA():
     OR set1() then along mark >>> addMark(ob,el)
     OR setC() then many marks >>> addMark(ob,{isHere:[[els],[keys]]}) */
-function addMark(ob,el){cl('addMark()',ob,[el]);
+function addMark(ob,el){//cl('addMark()',ob,[el]);
  if(!ob){//new mark
     ob=navMark();
-    dialog(dt.v.cm,ob.name,{un:true}).then(n=>{cl('addMark() ',n)
+    dialog(dt.v.cm,ob.name,{un:true}).then(n=>{//cl('addMark() ',n)
         ob.name=n;
         el=creMark(ob);
         el.DB=ob;
@@ -1595,7 +1597,7 @@ function addMark(ob,el){cl('addMark()',ob,[el]);
  titMark(el,ob);
  m.append(el)
 }
-function creMark(o){cl('creMark() o=',o)
+function creMark(o){//cl('creMark() o=',o)
  e = document.createElement('li');
  e.name='marks';
  e.setAttribute('id','m'+o.id);
@@ -1607,7 +1609,7 @@ function titMark(m,o){
     m.append(ppp.clon())
 }
 /** click on 📝 == books, marks, pipls, tags */
-function ediObj(e){cl('ediObj() e=',e)
+function ediObj(e){//cl('ediObj() e=',e)
  if(!e){dialog(dt.v.sl);return}
  if(!e.DB)return;
  if(e.tagName=="FIGURE"){
@@ -1624,7 +1626,7 @@ function detUp(e,t){
  e.classList.toggle('dn');
  t.classList.toggle('close')
 }
-function seaUp(k,t,a,b,c,d){cl('seaUp('+k+')',t,a,b)
+function seaUp(k,t,a,b,c,d){//cl('seaUp('+k+')',t,a,b)
  if(t.classList.contains('close')){
     seaCl();
     if(k)filAG(a,b,c,d);
@@ -1706,7 +1708,7 @@ function treeChilds(pt,e,f=-1,ix,ox,ex,k){//console.log('treeChilds('+pt.name+')
             }else if(f!=-1 && f!=0)f(i)
         }
     }
- });cl('treeChilds() return=',ix,e);
+});//cl('treeChilds() return=',ix,e);
  if(f==0)return [s,ix]; else return ix
 }
 function reN(o,e,pt){//rename `e`=<option>, `o`=result get() objectStore
@@ -1752,12 +1754,12 @@ function reT(e){// from addSea|reD()
     else treePathMark(i);
  })
 }
-function reM(pt){cl('reM() pt.arrMer=',pt.arrMer)// from addSea|merPT()
+function reM(pt){//cl('reM() pt.arrMer=',pt.arrMer)// from addSea|merPT()
  if(pt.arrMer)upDate(pt.arrMer)
  else reD()
 }
 function reD(){
- if(tga.delMer)delDate({name:'tags',transFunc:()=>{cl('reD() + delDate()');//from reM|reP()
+ if(tga.delMer)delDate({name:'tags',transFunc:()=>{//cl('reD() + delDate()');//from reM|reP()
     tga.delMer=undefined;
     tga.eleMer.selected=true;
     tga.eleMer=undefined;
@@ -1776,7 +1778,7 @@ param o = result value from cursor filAG|filPT(setC())|search()|searchA()
 param e = sea from search|amoPT|filAG() OR pip|tag from filPT|newPT() OR <options> from set1()
     — e.book = <figure> from filEbk(filPT()) | = -1 from amoPT|filAG|setPT(filPT())|search() | = undefined from set1()
 param m = marker before <li> */
-function addSea(o,e,m=''){cl('addSea() o=',o,' e=',[e])
+function addSea(o,e,m=''){//cl('addSea() o=',o,' e=',[e])
  if(e.book==undefined){//rename|replace pip|tga from ediObj|merPT(upDate(set1()))
     let pt=getPT(e);
     let k=true;
@@ -1788,7 +1790,7 @@ function addSea(o,e,m=''){cl('addSea() o=',o,' e=',[e])
     let p=document.createElement(e.tit);
     p.value=o.id;
     p.name=e.name;
-    p.DB=o;cl('addSea() create <'+e.tit+'>.DB=',p.DB);
+    p.DB=o;//cl('addSea() create <'+e.tit+'>.DB=',p.DB);
     p.textContent=( o.name || o.title[0]+( o.title[1] ? ' / '+o.title[1] : '' ) );
     if(m){p.style.setProperty("--mark-before","\'"+m+" \'");p.classList.add('mbef','lik')};
 
@@ -1841,7 +1843,7 @@ function addOwnList(e,p,t){
 /** add `p`=<li>|<option> to `e`=pip|tga list (!!not ownl!!)
 — e.under = previous sibling <option>|<li> from search|setC|newPT()
 — e.DB = create new pip|tga */
-function addSeaList(e,p){cl('addSeaList() e=',[e],p.name)
+function addSeaList(e,p){//cl('addSeaList() e=',[e],p.name)
  if(e.under!=undefined){
     if(e.under.level!=undefined){
         p.level=e.under.level+1;
@@ -1880,7 +1882,7 @@ function amoPT(e){// param e = Event <li>.onclick from sea.func() | = object pip
  }
  let c,d,b=e.books;//click on amo
  if(!b){b=e.target.books;c=b.size;d=e.target.booksChild}//click on <li> sea
- else{c=b.size;d=e.booksChild};cl('amoPT() b=',b,c,d);
+ else{c=b.size;d=e.booksChild};//cl('amoPT() b=',b,c,d);
 
  if(ebk && ebk.savIs){dialog(dt.v.sa);return}
  sh.up('MAIN');
@@ -1962,7 +1964,7 @@ o.AU = {"name_file":url_to_blob,...} already unziped files || {}
 -- from addBook()->prepFig()
 -- from goMark()->prepFig()
  */
-function showBook(o){cl('showBook() dt.b=',dt.b,' o=',[o])
+function showBook(o){//cl('showBook() dt.b=',dt.b,' o=',[o])
  if(dt.b && (dt.b.id==o.DB.id || o.id==dt.b.id)){sh.hid('MAIN');return}
  fot.textContent = '';
  nav.textContent = '';
@@ -2012,7 +2014,7 @@ function prs(){
 }
 /** go to next\prev file in book spine --from showBook(), goMark(), goHref(), goFile()
 param c = number in list of files o.DB.spine !!==> 0 < c < o.DB.spine.length */
-function setFile(c){cl('setFile('+c+')',dt.b);
+function setFile(c){//cl('setFile('+c+')',dt.b);
  dt.c=c;
  auFile(dt.b.DB.spine[c])
 }
@@ -2049,7 +2051,7 @@ const oau={
 ,'imgC':makeCover
 }
 /** set iframe.src now OR on sh.f() */
-function setSrc(f){cl('setSrc() fr.v=',fr.v,' dt.b.AU[f]=',dt.b.AU[f])
+function setSrc(f){//cl('setSrc() fr.v=',fr.v,' dt.b.AU[f]=',dt.b.AU[f])
  if(fr.v)sh.f=setSrc.bind(this,f);//run on show IFRAME
  else{
   ifr.src = dt.b.AU[f];
@@ -2362,7 +2364,7 @@ param es =  array of html elements was changed | null - all elements with class=
 	  value="XXX" alt="%">   <= value to objectStore
 in [] elments with same!! name="{obj_name}"
 after run with e => e.DB = {} object item for add\update */
-function setChange(es){cl("setChange() es=",es);
+function setChange(es){//cl("setChange() es=",es);
  if(db){
   if(es){
 	es.forEach(setEdb);
@@ -2370,7 +2372,7 @@ function setChange(es){cl("setChange() es=",es);
   }else{
     for(const i in dbf){
         if(dbf[i][1]){
-		 let a=document.querySelectorAll('.change[name="'+i+'"]');cl('setChange() I=',i,'A =',a);
+		 let a=document.querySelectorAll('.change[name="'+i+'"]');//cl('setChange() I=',i,'A =',a);
 		 if(a.length>0)upDate(a)
         }
 	}
@@ -2378,12 +2380,12 @@ function setChange(es){cl("setChange() es=",es);
  }else if(es)es.forEach(i => { setEdb(i); dbf[i.name][0](i.DB,i) })
 }
 /** generate object for update DB */
-function setEdb(e){cl('setEdb() e=',e)
+function setEdb(e){//cl('setEdb() e=',e)
  e.classList.add('change');
  if(e.parentNode)e.parentNode.classList.add('chapar');
  switch(e.name){
   case "styls":
-	e.DB = {id:e.id,val:e.value+(e.alt || '')};cl('setEdb("styls") e.DB=',e.DB)
+	e.DB = {id:e.id,val:e.value+(e.alt || '')};//cl('setEdb("styls") e.DB=',e.DB);
 	 break;
 //  case "marks":
 //    if(e.reName)e.DB.name=e.reName;
@@ -2402,7 +2404,7 @@ param els = [el,el...] array | NodeList of <elements > where:
     search this names into object el.setIdObj[] on index "nams", if not find add new name
     and make el.DB[field][] with autoincremented primaryKey's corresponding names */
 async function upDate(els){
- if(els.length==0)return;cl('upDate('+els[0].name+') els=',els)
+ if(els.length==0)return;//cl('upDate('+els[0].name+') els=',els)
  let ao = els[0].setIdObj ? [els[0].name, ...els[0].setIdObj] : [els[0].name];
  let t = db.transaction(ao, 'readwrite');
  t.onerror=e=>{console.log('ERROR upDate() Transaction e=',e.target.error)};
@@ -2418,14 +2420,14 @@ async function upDate(els){
   if(i.setIdName){
     await Promise.all( i.setIdName.map(getArrNameId,{i,t}) );
     i.setIdName=undefined;i.setIdObj=undefined
-  };cl('AFTER AWAIT ALL i.DB',i.DB);
+ };//cl('AFTER AWAIT ALL i.DB',i.DB);
 
   let r = o.put(i.DB);
   r.onsuccess = function(e){//cl("upDate() onsuccess key=",e.target.result," i =",i)
     if(i.upId){
         i.DB.id = e.target.result;
         if(i.name=="books"){
-            let ms = document.querySelectorAll('#marks li[alt="'+i.id+'"]');cl('upDate() i.id=='+i.id+'== MARKS =',ms)
+            let ms = document.querySelectorAll('#marks li[alt="'+i.id+'"]');//cl('upDate() i.id=='+i.id+'== MARKS =',ms)
             i.id = 'b'+i.DB.id;
             i.querySelectorAll('figcaption > span').forEach((t,c)=>{t.setAttribute('name','tag'+i.DB.tag[c])});
             i.querySelectorAll('figcaption header span').forEach((a,c)=>{a.setAttribute('name','auth'+i.DB.auth[c])});
@@ -2443,23 +2445,23 @@ async function upDate(els){
  }
 };
 /** make from this.i[a]=[name,name,...] new array this.i.DB[a]=[id,id,...] */
-async function getArrNameId(a,z,m,l=0){cl('getArrNameId('+a+')',this);// "auth" "tag"
- if(this.i[a] && (l=this.i[a].length) > 0){cl('getArrNameId('+a+') l=',l);
+async function getArrNameId(a,z,m,l=0){//cl('getArrNameId('+a+')',this);// "auth" "tag"
+ if(this.i[a] && (l=this.i[a].length) > 0){//cl('getArrNameId('+a+') l=',l);
     this.i.DB[a] = new Array(l);
     return Promise.all(this.i[a].map(getNameId,{t:this.t,i:this.i,a,z}));
  }else return 1
 };
 /** make from `name` [present|new] `id` */
-async function getNameId(n,c){cl('getNameId('+n+') this=',this);
- return new Promise(resolve=>{cl('getNameId('+n+') Promise this=',this);
+async function getNameId(n,c){//cl('getNameId('+n+') this=',this);
+ return new Promise(resolve=>{//cl('getNameId('+n+') Promise this=',this);
     let s = this.i.setIdObj[this.z];
     let o = this.t.objectStore(s);
     let d = o.index('nams');
     let r = d.getKey(n);
     r.onerror=resolve;
-    r.onsuccess=e=>{cl('setIdName onsuccess getKey id=',e.target.result);
+    r.onsuccess=e=>{//cl('setIdName onsuccess getKey id=',e.target.result);
         if(e.target.result){this.i.DB[this.a][c]=e.target.result;resolve(1)
-        }else{cl('getNameId NOT SELECT');
+        }else{//cl('getNameId NOT SELECT');
             let d = {name:n};
             if(s=='tags')d.pa=0;
             let q = o.add(d);
@@ -2473,7 +2475,7 @@ async function getNameId(n,c){cl('getNameId('+n+') this=',this);
 param n = name objectStore
 param a = Array[] | Set{} of key for get
 param f = function callback on success get */
-function get1(n,a,f,x,y){cl('get1('+n+')',a)
+function get1(n,a,f,x,y){//cl('get1('+n+')',a)
  let o = db.transaction([n],'readonly').objectStore(n);
  a.forEach(i=>{
     o.get(i).onsuccess=e=>{ f(e.target.result,x,y) };
@@ -2498,7 +2500,7 @@ function getAK(o){
 }
 /** select all from DB on start session as setA() without argument OR
 param els = [] | NodeList — the same in upDate() */
-function setA(els){cl('setA()',els);
+function setA(els){//cl('setA()',els);
  if(els){
   if(els.length==1)set1(els[0]);
   else{
@@ -2519,15 +2521,15 @@ param o = {}
     o.direct = direction to travel
     o.parId = true for draw tree stucture at addSea()
 return int count object */
-function setC(o){cl("setC()",[o]);
+function setC(o){//cl("setC()",[o]);
  let s = db.transaction(o.name,"readonly").objectStore(o.name);
- if(o.idx)s = s.index(o.idx);cl("setC()",s);
+ if(o.idx)s = s.index(o.idx);//cl("setC()",s);
  let a={i:0},b=[];
  let ob,kc,ks=o.key;
  if(o.els){
     ob=o.els.shift()
     ks=IDBKeyRange.bound(ob.DB.id, o.els[o.els.length-1].DB.id);
- };cl('setC() ks=',ks,o.direct,ob,o.els)
+ };//cl('setC() ks=',ks,o.direct,ob,o.els)
  let r=s.openCursor(ks,o.direct);
 
  r.onerror=()=>{cl('CURSOR ERROR=',r.error)};
@@ -2549,7 +2551,7 @@ function setC(o){cl("setC()",[o]);
             ob=o.els.shift();
             kc=ob.DB.id
         }else return a.i
-    };cl('setC() kc=',kc,ob,o.els)
+    };//cl('setC() kc=',kc,ob,o.els)
     c.continue(kc)
   }else{
     if(o.def)setDef(b)// set default lang, width, color & background if its not present into DB
@@ -2591,7 +2593,7 @@ function set1(o){console.log('set1() o=',o," objectStore=",o.name," o.DB.id=",o.
 }
 /** delete objectStore from DB & Element from DOM
 param el the same in upDate([el]) */
-function delObj(e){cl('delObj() e=',e);
+function delObj(e){//cl('delObj() e=',e);
  let n=titObj[e.name](e);
  dialog(dt.v.de+' <b>'+n[0]+'</b>',0).then(v=>{
     if(db){

@@ -40,11 +40,11 @@ function avcIn(e){
 }
 cpi.addEventListener('change',avcCh);
 bpi.addEventListener('change',avcCh);
-function avcCh(e){console.log('avcCh()',e.target);
+function avcCh(e){//console.log('avcCh()',e.target);
  e.target.DB[1].value=e.target.value;
  setChange([e.target.DB[1]]);
 }
-function avcToday(k,t){console.log('avcToday('+k+')');
+function avcToday(k,t){//console.log('avcToday('+k+')');
  av.c.value=dt.r.getPropertyValue('--c-'+k);
  av.b.value=dt.r.getPropertyValue('--b-'+k);
  setChange([av.b,av.c])
@@ -82,7 +82,7 @@ function avcSet(e,ee,eee,c='#ff0000',b='#00ff00'){// el,el,el,color,background
 }
 
 /** set value for styled av[] <elements> */
-function setValue(i,v){console.log('setValue('+i+','+v+')');
+function setValue(i,v){//console.log('setValue('+i+','+v+')');
  switch(i){
   case "c":
 	avcIs(v,null);
@@ -100,7 +100,7 @@ function setValue(i,v){console.log('setValue('+i+','+v+')');
  av[i].value=v; // all & for "l" just is it
 }
 /** first load ebook.set.html == set all values to input elements av[] */
-function setValues(){console.log('setValueSSSSS');
+function setValues(){//console.log('setValueSSSSS');
  let v;
  for(let i in av){
   switch(i){
@@ -426,7 +426,7 @@ function merPT(pt){// merge options of pt = pip|tag
     pt.eleMer=pt.arrMer=pt.delMer=undefined;
     d.splice(c,1);//items keys for delete
     r[0].splice(c,1);//<option>'s for delete
-console.log('merPT() o=',o,' o.DB=',o.DB,'o.reName=',o.reName,'o.rePlace=',o.rePlace,'o.under=',o.under,'c=',c,'d=',d,'r[0]=',r[0].map(o=>o.DB.name));
+//console.log('merPT() o=',o,' o.DB=',o.DB,'o.reName=',o.reName,'o.rePlace=',o.rePlace,'o.under=',o.under,'c=',c,'d=',d,'r[0]=',r[0].map(o=>o.DB.name));
 
     if(pt.parId){//only tags
         pt.eleMer=o;//elect
