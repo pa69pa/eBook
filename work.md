@@ -74,7 +74,7 @@
 - `dt.b` = <figure> of current open book in <iframe> ==> `dt.b.DB` = object "books" from db
 - `dt.c` = int number current open file from `dt.b.DB.spine`
 - `dt.z` = string name current open file NOT from `dt.b.DB.spine` but on `dt.b.ZIP.files` <— return to undefined value at moveOver()
-- `dt.zmark` = {x:1,targ:<a>} set at goHref() &go zipFile() ==> for moveOver() & ... setPage(setTarg()) — return to spine from non-spine zip-file
+- `dt.zmark` = {x:1,targ:<a>} set at goHref() & go zipFile() ==> for moveOver() & ... setPage(setTarg()) — return to spine from non-spine zip-file
 
 ## wh{} <= all is integer
 		// init at reSume()
