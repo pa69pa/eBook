@@ -26,6 +26,7 @@ dependence:	jszip.min.js <== https://github.com/Stuk/jszip — tested with v.3.6
  --c:transparent;
  --b:transparent;
  --w:500px;
+ --fr-maxw:calc(100% - 8px);
  --m:50px;
  --mc:rgba(132,132,132,.5);
  --foot:0px;
@@ -62,12 +63,15 @@ input,select{font-size:.8em}
 iframe{
  position:relative;display:block;margin:0 auto;
  width:calc(var(--w) - 8px);
- max-width:calc(100% - 8px);
+ max-width:var(--fr-maxw);
  height:calc(100vh - var(--foot));
  border:none;overflow:hidden;
  border-left:4px solid;
  border-right:4px solid;
  border-color:transparent
+}
+@media (orientation: portrait) {
+ iframe{ width:var(--fr-maxw) }
 }
 nav{
  position:absolute;left:0;top:0;height:100vh;width:var(--n);
