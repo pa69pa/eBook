@@ -197,7 +197,7 @@ dialog select option:first-of-type{font-style:italic;font-size:70%;color:gray;di
 #msg a{font-weight:bold;text-decoration:none;color:var(--c)}
 #msg b[onclick],.details_open,.details_close,#marks li,.maft,.lik{cursor:pointer}
 #hah{
- position:absolute;opacity:1;overflow:hidden;border:1ps solid blue;
+ position:absolute;opacity:1;overflow:hidden;
  width:var(--hw);height:var(--hah);bottom:0;right:calc(100% / -2);
  text-align:right;color:transparent;font-size:var(--m);line-height:var(--hw)
 }
@@ -264,7 +264,7 @@ nav::-webkit-scrollbar-thumb{background-color:var(--p);border-radius:5px}
   <div class="col1"><input type="checkbox" id="local_store"> <label for="local_store"></label></div>
   <div class="col1" id="swr" class="with_db dn"><input type="checkbox" id="service_worker"> <label for="service_worker"></label></div>
  </section>
- <div id="hah">:-)</div>
+ <!--div id="hah">:-)</div-->
  <span id="msg"></span>
  <dialog class="edit"><label></label><input type="text"><span></span> <select></select>
   <footer><div class="btn" name="confirm" onclick="dig.res()"></div> <div class="btn" name="cancel" onclick="dig.close();dig.reject(null)"></div></footer>
