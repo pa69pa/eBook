@@ -29,7 +29,7 @@ dependence:	jszip.min.js <== https://github.com/Stuk/jszip — tested with v.3.6
  --fr-maxw:calc(100% - 8px);
  --m:50px;
  --mc:rgba(132,132,132,.5);
- --foot:0px;
+ --foot:2px;
  --p:#67bbd073;
  --bump-yes:#ff6b84;
  --bump-not:#6efdae;
@@ -59,7 +59,6 @@ html,body,header,footer,iframe,menu,nav,div,ol,ul,aside,select
 html,body{
  width:100%;height:100vh;overflow:hidden
 }
-html{border:1px solid red}
 input,select{font-size:.8em}
 iframe{
  position:relative;display:block;margin:0 auto;
@@ -69,7 +68,7 @@ iframe{
  border:none;overflow:hidden;
  border-left:4px solid;
  border-right:4px solid;
- border-color:green;//transparent
+ border-color:transparent
 }
 @media (orientation: portrait) {
  iframe{ width:var(--fr-maxw) }
@@ -198,7 +197,7 @@ dialog select option:first-of-type{font-style:italic;font-size:70%;color:gray;di
 #msg b[onclick],.details_open,.details_close,#marks li,.maft,.lik{cursor:pointer}
 #hah{
  position:absolute;opacity:1;overflow:hidden;
- width:var(--hw);height:var(--hah);bottom:0;right:calc(100% / -2);
+ width:var(--hw);height:var(--hah);bottom:0;right:0;//calc(100% / -2);
  text-align:right;color:transparent;font-size:var(--m);line-height:var(--hw)
 }
 .corner_right::before,.corner_left::before{content:"";display:block;opacity:1;width:200%;height:200%;position:absolute;border-radius:50%;bottom:0}
@@ -264,7 +263,7 @@ nav::-webkit-scrollbar-thumb{background-color:var(--p);border-radius:5px}
   <div class="col1"><input type="checkbox" id="local_store"> <label for="local_store"></label></div>
   <div class="col1" id="swr" class="with_db dn"><input type="checkbox" id="service_worker"> <label for="service_worker"></label></div>
  </section>
- <!--div id="hah">:-)</div-->
+ <div id="hah">:-)</div>
  <span id="msg"></span>
  <dialog class="edit"><label></label><input type="text"><span></span> <select></select>
   <footer><div class="btn" name="confirm" onclick="dig.res()"></div> <div class="btn" name="cancel" onclick="dig.close();dig.reject(null)"></div></footer>
