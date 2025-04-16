@@ -47,6 +47,9 @@ dependence:	jszip.min.js <== https://github.com/Stuk/jszip — tested with v.3.6
  --l-right:max(calc((100vw - var(--w)) / 2),0px);
  --l-list:calc(var(--l-right) - min(100vw,var(--w)));
 }
+@media (orientation: portrait) {
+ :root{ --w:var(--fr-maxw) }
+}
 .theme{
  color:var(--c);
  background-color:var(--b);
@@ -57,7 +60,7 @@ html,body,header,footer,iframe,menu,nav,div,ol,ul,aside,select
  margin:0;padding:0;border:0;
 }
 html,body{
- width:100%;height:120vh;overflow:hidden
+ width:100%;height:100vh;overflow:hidden
 }
 input,select{font-size:.8em}
 iframe{
@@ -69,9 +72,6 @@ iframe{
  border-left:4px solid;
  border-right:4px solid;
  border-color:transparent
-}
-@media (orientation: portrait) {
- iframe{ width:var(--fr-maxw) }
 }
 nav{
  position:absolute;left:0;top:0;height:100vh;width:var(--n);
@@ -155,7 +155,7 @@ body > footer{
  width:100%;height:var(--foot);
  background-color:var(--b);
 }
-dialog{width:var(--w);max-width:90%}
+dialog{width:var(--w);max-width:98%}
 dialog input{width:98%}
 dialog select option{font-style:normal;font-size:100%;color:black;direction:ltr;}
 dialog select option:first-of-type{font-style:italic;font-size:70%;color:gray;direction:rtl;}
@@ -190,7 +190,7 @@ dialog select option:first-of-type{font-style:italic;font-size:70%;color:gray;di
 .details_close::before, .close::before {content:'▶';font-size:80%;display:inline-block;width:1.2rem}
 #msg{
  position:absolute;left:0;bottom:var(--foot);padding:0 15px;
- font-size:70%;;font-family:sans-serif;
+ font-size:2em;;font-family:sans-serif;
  background:var(--s);box-shadow:10px 1px 5px var(--s)
 }
 #msg a{font-weight:bold;text-decoration:none;color:var(--c)}
