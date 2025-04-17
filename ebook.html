@@ -29,7 +29,7 @@ dependence:	jszip.min.js <== https://github.com/Stuk/jszip — tested with v.3.6
  --fr-maxw:calc(100% - 8px);
  --m:50px;
  --mc:rgba(132,132,132,.5);
- --foot:9px;
+ --foot:8px;
  --p:#67bbd073;
  --bump-yes:#ff6b84;
  --bump-not:#6efdae;
@@ -60,7 +60,7 @@ html,body,header,footer,iframe,menu,nav,div,ol,ul,aside,select
  margin:0;padding:0;border:0;
 }
 html,body{
- width:100%;height:100vh;overflow:hidden
+ width:100%;height:100vh;max-height:100vh;overflow:hidden
 }
 input,select{font-size:.8em}
 iframe{
@@ -389,7 +389,7 @@ async function onSrc(){//cl("onSrc() iframe load",ifr.src);
  fr.h.onkeydown=keyDown;
 
  fr.b=fr.d.body.style;
- fr.b.margin=0;fr.b.padding=0;fr.b.border=0;//fr.b.minHeight='88%';
+ fr.b.margin=0;fr.b.padding=0;fr.b.border=0;//fr.b.minHeight='88%';<<<<<<<<<<<<
  fr.b.textAlign='justify';//???????????????????????????????????????????????????
  fr.b.color='var(--c)';
  fr.b.backgroundColor='var(--b)';
@@ -397,7 +397,7 @@ async function onSrc(){//cl("onSrc() iframe load",ifr.src);
  fr.s=fr.h.style;
  fr.s.marginLeft='0px';
  fr.s.margin=0;fr.s.padding=0;fr.s.border=0;
- //fr.s.height='100%';
+ //fr.s.height='100%';<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
  if(!dt.z && (dt.b.DB.spine[dt.c].endsWith('cover.xhtml') || dt.b.DB.spine[dt.c].endsWith('titlepage.xhtml'))){
     fr.s.display='table';fr.s.width='100%';
     fr.b.display='table-cell';fr.b.textAlign='center';fr.b.verticalAlign='middle'
@@ -1154,7 +1154,7 @@ let tim=0;
 let len = h.headers.get(h.headers.get('content-encoding')?'x-file-size':'content-length');
 let tot = len?parseInt(len,10):null;
 		if(tot){
-		 dt.r.setProperty('--foot','4px');
+		 dt.r.setProperty('--foot','8px');
 		 len=0;tim=setMsg(dt.v.fh);fot.set(10)
 		}
 		fetch(u, met('GET')).then(r => r.body).then(rb => {
@@ -1239,7 +1239,7 @@ function unZip(a){//cl('unZip()',this.DB.src)
 
  zip.loadAsync(a)
  .then(z => {//cl("unZip() ZIP.files = ",z.files);
-    dt.r.setProperty('--foot','4px');fot.set(11);
+    dt.r.setProperty('--foot','8px');fot.set(11);
     this.ZIP=z;this.DB.raw=a;
 	this.DB.spine=[];this.AU={};this.d='META-INF/container.xml';
 
