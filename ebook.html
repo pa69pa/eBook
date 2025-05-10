@@ -29,7 +29,7 @@ dependence:	jszip.min.js <== https://github.com/Stuk/jszip — tested with v.3.6
  --fr-maxw:calc(100% - 8px);
  --m:50px;
  --mc:rgba(132,132,132,.5);
- --foot:8px;
+ --foot:calc(1ex \ 2);
  --p:#67bbd073;
  --bump-yes:#ff6b84;
  --bump-not:#6efdae;
@@ -46,6 +46,8 @@ dependence:	jszip.min.js <== https://github.com/Stuk/jszip — tested with v.3.6
  --h:#77777777;
  --l-right:max(calc((100vw - var(--w)) / 2),0px);
  --l-list:calc(var(--l-right) - min(100vw,var(--w)));
+ --vh:1vh;
+ --fillH:calc(var(--vh, 1vh) * 100);
 }
 @media (orientation: portrait) {
  :root{ --w:var(--fr-maxw) }
@@ -60,21 +62,22 @@ html,body,header,footer,iframe,menu,nav,div,ol,ul,aside,select
  margin:0;padding:0;border:0;
 }
 html,body{
- width:100%;height:100vh;max-height:100vh;overflow:hidden
+ width:100%;height:var(--fillH);
+ overflow:hidden
 }
 input,select{font-size:.8em}
 iframe{
  position:relative;display:block;margin:0 auto;
  width:calc(var(--w) - 8px);
  max-width:var(--fr-maxw);
- height:calc(100vh - var(--foot));
+ height:calc(var(--fillH) - var(--foot));
  border:none;overflow:hidden;
  border-left:4px solid;
  border-right:4px solid;
  border-color:transparent
 }
 nav{
- position:absolute;left:0;top:0;height:100vh;max-height:100vh;width:var(--n);
+ position:absolute;left:0;top:0;height:var(--fillH);width:var(--n);
  overflow-y:auto;overflow-x:hidden;
  border-radius:5px;box-shadow:2px 2px 3px gray
 }
@@ -106,7 +109,7 @@ menu{position:absolute;top:5px;right:var(--m-right);width:var(--m);
 .ownl{color:#80808080}
 main{
  position:absolute;left:0;right:0;top:0;margin:0 auto;
- width:var(--w);max-width:100%;height:calc(100vh - var(--foot));
+ width:var(--w);max-width:100%;height:calc(var(--fillH) - var(--foot));
  display:grid;grid-template-rows:1fr 1fr 1000fr;grid-template-areas:"span" "sea" "read";grid-column-gap:.1em;
  box-shadow: inset 28px 0 28px -28px var(--main-shadow), inset -28px 0 28px -28px var(--main-shadow);border-radius:5px
 }
@@ -142,7 +145,7 @@ figure h3,figure h4,figure h5,figure h6{font-size:70%;font-weight:normal}
 .colA{display:grid;grid-template-columns:repeat(auto-fit,minmax(var(--m),1fr));grid-column-gap:.3em}
 section{
  z-index:150;position:absolute;
- width:100%;height:100vh;top:0;left:0;
+ width:100%;height:var(--fillH);top:0;left:0;
  overflow-y:auto;
 }
 section > div, section > details, section > input, .edit > b, .edit > i{display:block;width:calc(var(--m) * 10);max-width:100%;margin:5px auto}
@@ -271,6 +274,12 @@ nav::-webkit-scrollbar-thumb{background-color:var(--p);border-radius:5px}
 </body>
 <script>//cl('DOC',{document});cl('indexedDB',window.indexedDB);
 window.URL = window.URL || window.webkitURL;
+function setViewportProperty() {
+ let vh = window.innerHeight * 0.01;
+ document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+window.addEventListener('resize', setViewportProperty);
+setViewportProperty();
 const ifr=document.querySelector("iframe"),
  man=document.querySelector("main"),
  sen=document.querySelector("section"),
@@ -461,7 +470,7 @@ function iWHs(i,w,h){
  i.removeAttribute('width');
  i.removeAttribute('height');
  i.style.width = w ? 'auto' : '100%';
- i.style.heigh = h ? 'auto' : 'calc(100vh - var(--foot))'
+ i.style.heigh = h ? 'auto' : 'calc(var(--fillH) - var(--foot))'
 }
 /** reSume on load window \ after resize window \ changeorientation \ resize <iframe> at setStyle('w') */
 var timerSume;
