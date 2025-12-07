@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="719.53839"
+   height="101.85667"
+   viewBox="0 0 190.37787 26.949578"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
+   sodipodi:docname="sline.svg">
+  <defs
+     id="defs2">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient849">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop845" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop847" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient821">
+      <stop
+         style="stop-color:#000000;stop-opacity:1"
+         offset="0"
+         id="stop817" />
+      <stop
+         id="stop825"
+         offset="0.15356877"
+         style="stop-color:#8000ff;stop-opacity:1" />
+      <stop
+         style="stop-color:#0000ff;stop-opacity:1"
+         offset="0.2381459"
+         id="stop827" />
+      <stop
+         id="stop829"
+         offset="0.30815837"
+         style="stop-color:#0080ff;stop-opacity:1" />
+      <stop
+         style="stop-color:#00ffff;stop-opacity:1"
+         offset="0.38805932"
+         id="stop831" />
+      <stop
+         id="stop833"
+         offset="0.46591184"
+         style="stop-color:#00ff80;stop-opacity:1" />
+      <stop
+         style="stop-color:#00ff00;stop-opacity:1"
+         offset="0.5447886"
+         id="stop835" />
+      <stop
+         id="stop837"
+         offset="0.62003231"
+         style="stop-color:#80ff00;stop-opacity:1" />
+      <stop
+         style="stop-color:#ffff00;stop-opacity:1"
+         offset="0.69993329"
+         id="stop839" />
+      <stop
+         id="stop841"
+         offset="0.77517706"
+         style="stop-color:#ff8000;stop-opacity:1" />
+      <stop
+         style="stop-color:#ff0000;stop-opacity:1"
+         offset="0.85044831"
+         id="stop843" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1"
+         offset="1"
+         id="stop819" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient821"
+       id="linearGradient823"
+       x1="39.154987"
+       y1="120.80256"
+       x2="155.24994"
+       y2="120.80256"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.108945,0,0,0.91463417,-13.152449,10.425404)" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient849"
+       id="radialGradient851"
+       cx="61.004093"
+       cy="124.66292"
+       fx="61.004093"
+       fy="124.66292"
+       r="64.612411"
+       gradientTransform="matrix(-0.01344364,0,-4.645159e-8,-0.11633923,61.824393,135.78624)"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="3.959798"
+     inkscape:cx="356.51118"
+     inkscape:cy="-43.643388"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="20"
+     fit-margin-left="5"
+     fit-margin-right="5"
+     fit-margin-bottom="20"
+     units="px"
+     inkscape:window-width="3840"
+     inkscape:window-height="2132"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(1.190281,-107.44077)">
+    <rect
+       style="opacity:1;fill:url(#linearGradient823);fill-opacity:1;stroke:url(#radialGradient851);stroke-width:1.33232808;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0"
+       id="rect815"
+       width="129.22482"
+       height="15.033916"
+       x="30.268276"
+       y="113.3986" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111126px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="-5.0923296e-07"
+       y="127.48431"
+       id="text863"><tspan
+         sodipodi:role="line"
+         id="tspan861"
+         x="-5.0923296e-07"
+         y="127.48431"
+         style="stroke-width:0.26458332">Ультра</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111126px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       x="161.36397"
+       y="127.48431"
+       id="text867"><tspan
+         sodipodi:role="line"
+         id="tspan865"
+         x="161.36397"
+         y="127.48431"
+         style="stroke-width:0.26458332">Инфра</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.48014164px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.39136842"
+       x="-0.4708859"
+       y="177.7366"
+       id="text8525"
+       transform="scale(1.4791879,0.67604664)"><tspan
+         sodipodi:role="line"
+         id="tspan8523"
+         x="-0.4708859"
+         y="177.7366"
+         style="stroke-width:0.39136842">←</tspan></text>
+    <text
+       transform="scale(-1.4791879,-0.67604664)"
+       id="text8533"
+       y="-170.53909"
+       x="-127.56583"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.48014164px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.39136842"
+       xml:space="preserve"><tspan
+         style="stroke-width:0.39136842"
+         y="-170.53909"
+         x="-127.56583"
+         id="tspan8531"
+         sodipodi:role="line">←</tspan></text>
+  </g>
+</svg>
