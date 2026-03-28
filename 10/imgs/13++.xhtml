@@ -51,7 +51,7 @@ object{
 <script type="application/javascript">
 //<![CDATA[
 var fg,fs = document.getElementById('fs'),ug,ub = document.getElementById('ub');
-var aP,cC,m,n=0,Z=true,S=5,W,I;
+var aP,cC,m,n=0,Z=true,S=5,W,I,zz=1320;
 window.top.l3=0;
 
 var pA=new Promise(resolve=>{ aP=resolve.bind(this,'ap') });
@@ -155,7 +155,7 @@ const wvz={
 ,1:v
 ,2:z
 }
-function aT(ix,iy,cx,cy,s,j,gG,gXY,k){console.log('aT()');
+function aT(ix,iy,cx,cy,s,j,gG,gXY,k){console.log('aT(n='+n+', j='+j+', gG='+gG+')');
  let o={attributeType:'XML',attributeName:'transform'
     ,type:'rotate'
     ,id:'r'+j+n
@@ -168,9 +168,11 @@ function aT(ix,iy,cx,cy,s,j,gG,gXY,k){console.log('aT()');
  if(j==1 && !gG)o.begin='r0'+n+'.end+0.02s';
 
  o=cE('animateTransform',o,gG?gG:g);
- if(j==0)o.addEventListener('endEvent',wvz[n]);
+ if(j==0){o.addEventListener('endEvent',wvz[n]);
+ console.log('aT endEvent n=',n);
+}
 
- if(n>0 || j==1){
+ if(n>0 || j==1){console.log('aT() translate');
  cE('animateTransform',{attributeType:'XML',attributeName:'transform'
  ,type:'translate'
  ,begin:'r'+j+n+'.begin'
@@ -191,7 +193,7 @@ function aT(ix,iy,cx,cy,s,j,gG,gXY,k){console.log('aT()');
  return o
 }
 
-function cE(e,s,p,k){console.log('cE(e='+e+')');
+function cE(e,s,p,k){console.log('cE(e='+e+'),k='+k);
  let o=document.createElementNS('http://www.w3.org/2000/svg',e);
  for(i in s){
   o.setAttributeNS(null,i,s[i]);
@@ -217,10 +219,10 @@ function z(){console.log('z()');
  ,stroke:'black','stroke-width':10,'stroke-opacity':dp
  },gG);
 
- gG.setAttributeNS(null,'transform','scale(8,8) translate('+m.X+', -320)');
+ gG.setAttributeNS(null,'transform','scale(8,8) translate('+m.X+', -'+zz+')');
  p.C=cE('circle',{cx:m.R.x,cy:m.R.y,r:5,fill:'green',id:'c'+id},gG);
  let pG=cR(p.C);
- let mC=cE('circle',{cx:-1*m.X,cy:320,r:5,fill:'indigo',id:'i'+id},m.parentNode,true);
+ let mC=cE('circle',{cx:-1*m.X,cy:zz,r:5,fill:'indigo',id:'i'+id},m.parentNode,true);
  let mG=cR(m.C);
 
  mG.X0=mG.X-mC.X
@@ -231,7 +233,7 @@ function z(){console.log('z()');
  let a1=Math.atan2(mG.Y0,mG.X0);
  let a2=Math.atan2(pG.Y0,pG.X0);
  let a0=(a2-a1)*-180/Math.PI;
- gG.setAttributeNS(null,'transform','scale(8,8) translate('+m.X+', -320) rotate('+a0+' '+(-1*m.X)+', 320)');
+ gG.setAttributeNS(null,'transform','scale(8,8) translate('+m.X+', -'+zz+') rotate('+a0+' '+(-1*m.X)+', '+zz+')');
 
  let t=aI(mC);
  g.setAttributeNS(null,'transform','translate('+t.x+','+t.y+')');
@@ -339,7 +341,7 @@ function q(j,T,X){console.log('q(j='+j+', T='+T+', X='+X+')');
  p.R=aG(p);
  p.C=cE('circle',{cx:p.R.x,cy:p.R.y,r:5,fill:'green',id:'c'+id},G);
 
- G.setAttributeNS(null,'transform','scale(0.0125,-0.0125) translate('+p.X+', -320)');
+ G.setAttributeNS(null,'transform','scale(0.0125,-0.0125) translate('+p.X+', -'+zz+')');
 
  let o=cE('animateMotion',{id:'aM'+n+'_'+j
  ,begin: j==0 ? '0s' : 'aM'+n+'_'+(j-1)+'.begin + '+dt+'s'
