@@ -51,7 +51,7 @@ object{
 <script type="application/javascript">
 //<![CDATA[
 var fg,fs = document.getElementById('fs'),ug,ub = document.getElementById('ub');
-var aP,cC,m,n=0,Z=true,S=5,W,I,zz=1320;
+var aP,cC,m,n=0,Z=true,S=5,W,I,zz=320;
 window.top.l3=0;
 
 var pA=new Promise(resolve=>{ aP=resolve.bind(this,'ap') });
@@ -216,7 +216,7 @@ function z(){console.log('z()');
  gG=cE('g',{id:'g'+id},g);
 
  let p=cE('path',{id:id,d:m.getAttribute('d')
- ,stroke:'black','stroke-width':10,'stroke-opacity':dp
+ ,stroke:'black','stroke-width':10,'stroke-opacity':0//dp
  },gG);
 
  gG.setAttributeNS(null,'transform','scale(8,8) translate('+m.X+', -'+zz+')');
