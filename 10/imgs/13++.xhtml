@@ -215,9 +215,9 @@ function z(){console.log('z() n ='+n+' m.id =',m.id);
  let id_='g_'+(Z?'A':'B');
  g=cE('g',{id:id_},svg);
  gG=cE('g',{id:'g'+id},g);
-
+////black
  let p=cE('path',{id:id,d:m.getAttribute('d')
- ,stroke:'black','stroke-width':10,'stroke-opacity':dp
+ ,stroke:'green','stroke-width':10,'stroke-opacity':dp
  },gG);
 
  gG.setAttributeNS(null,'transform','scale(8,8) translate('+m.X+', -'+zz+')');
@@ -248,8 +248,8 @@ function z(){console.log('z() n ='+n+' m.id =',m.id);
  p.L=m.L;
 
  let e=aI(cR(p.C));
- console.log('z() RoTrSc e=',e.x,e.y)
- cE('circle',{cx:e.x,cy:e.y,r:15,fill:'pink',id:'I'+id},g);
+ //console.log('z() RoTrSc e=',e.x,e.y)
+ //cE('circle',{cx:e.x,cy:e.y,r:15,fill:'pink',id:'I'+id},g);
  let o=aT(e.x,e.y,-1*t.x,-1*t.y,20,1,gG,'0 '+m.R.x+' '+m.R.y,'');
  cE('animate',{attributeType:'XML'
    ,attributeName:'stroke-opacity'
@@ -278,13 +278,13 @@ function w(){console.log('w()');
  let p0=m.U-cC.W
     ,p1=m.U+cC.W
     ,w0=w1=cC.W;
-/*---------------*/
+/*--------
 if(m.C){
  let P0=m.getPointAtLength(p0);
  let P1=m.getPointAtLength(p1);console.log('W green=',m.R || m.C,'lightgreen=',P0,P1);
  cE('circle',{cx:P0.x,cy:P0.y,r:5,fill:'lightgreen',id:'p0'+m.id},m.C.parentNode)
  cE('circle',{cx:P1.x,cy:P1.y,r:5,fill:'lightgreen',id:'p1'+m.id},m.C.parentNode)
-}
+}-------*/
  dk=p0/m.L+';'+p1/m.L;
  W=w0+w1;
  I=W/16;
@@ -312,7 +312,7 @@ var dT
  ,ac
  ,gG;
 
-function q(j,T,X){console.log('q() j=',j,' T=',T,' X=',X);
+function q(j,T,X){//console.log('q() j=',j,' T=',T,' X=',X);
  let r,d,x,k=true,sf=fg;
 
  const qL=()=>{
