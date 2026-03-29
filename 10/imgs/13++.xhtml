@@ -4,6 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
 <head>
   <title>13++ / Инструкция проникновения</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌀</text></svg>">
     <style>
 html,body,svg{
  width:100%;
@@ -106,9 +107,9 @@ function aX(){
  return rf(pa.length-2*h)+h
 }
 
-function a(x){console.log('a(x='+x+')');
+function a(x){console.log('AAAAAAAAAAAAAA N =',n,'x =',x,pa)
  let i,o,t;
- m=pa[x];
+ m=pa[x];m.style.stroke='coral';
  if(n>0){
     i=aI( cR( m.parentNode.childNodes[1] ) );
     let c=aI(cC);
@@ -135,7 +136,7 @@ function a(x){console.log('a(x='+x+')');
  o.beginElementAt(1);
 }
 
-function aG(p){console.log('aG()');
+function aG(p){
  p.L=p.getTotalLength();
  if(p.L<cC.WL){
   p.U=p.L/2
@@ -146,7 +147,7 @@ function aG(p){console.log('aG()');
  };
  return p.getPointAtLength(p.U)
 }
-function aI(r){console.log('aI()');
+function aI(r){
  return new DOMPoint(r.X,r.Y).matrixTransform(g.getScreenCTM().inverse())
 }
 
@@ -155,7 +156,7 @@ const wvz={
 ,1:v
 ,2:z
 }
-function aT(ix,iy,cx,cy,s,j,gG,gXY,k){console.log('aT(n='+n+', j='+j+', gG='+gG+')');
+function aT(ix,iy,cx,cy,s,j,gG,gXY,k){console.log('aT(n=',n,' j=',j,' s=',s,' gG=',gG,')');
  let o={attributeType:'XML',attributeName:'transform'
     ,type:'rotate'
     ,id:'r'+j+n
@@ -193,7 +194,7 @@ function aT(ix,iy,cx,cy,s,j,gG,gXY,k){console.log('aT(n='+n+', j='+j+', gG='+gG+
  return o
 }
 
-function cE(e,s,p,k){console.log('cE(e='+e+'),k='+k);
+function cE(e,s,p,k){
  let o=document.createElementNS('http://www.w3.org/2000/svg',e);
  for(i in s){
   o.setAttributeNS(null,i,s[i]);
@@ -209,14 +210,14 @@ function cR(o){
  return b
 }
 
-function z(){console.log('z()');
+function z(){console.log('z() n ='+n+' m.id =',m.id);
  let id=m.id+'_';
  let id_='g_'+(Z?'A':'B');
  g=cE('g',{id:id_},svg);
  gG=cE('g',{id:'g'+id},g);
 
  let p=cE('path',{id:id,d:m.getAttribute('d')
- ,stroke:'black','stroke-width':10,'stroke-opacity':0//dp
+ ,stroke:'black','stroke-width':10,'stroke-opacity':dp
  },gG);
 
  gG.setAttributeNS(null,'transform','scale(8,8) translate('+m.X+', -'+zz+')');
@@ -235,7 +236,7 @@ function z(){console.log('z()');
  let a0=(a2-a1)*-180/Math.PI;
  gG.setAttributeNS(null,'transform','scale(8,8) translate('+m.X+', -'+zz+') rotate('+a0+' '+(-1*m.X)+', '+zz+')');
 
- let t=aI(mC);
+ let t=aI(mC);console.log('z() translate('+t.x+','+t.y+')');
  g.setAttributeNS(null,'transform','translate('+t.x+','+t.y+')');
 
  document.querySelectorAll('svg > g:not(#'+id_+')').forEach(i=>{
@@ -247,6 +248,8 @@ function z(){console.log('z()');
  p.L=m.L;
 
  let e=aI(cR(p.C));
+ console.log('z() RoTrSc e=',e.x,e.y)
+ cE('circle',{cx:e.x,cy:e.y,r:15,fill:'pink',id:'I'+id},g);
  let o=aT(e.x,e.y,-1*t.x,-1*t.y,20,1,gG,'0 '+m.R.x+' '+m.R.y,'');
  cE('animate',{attributeType:'XML'
    ,attributeName:'stroke-opacity'
@@ -262,7 +265,7 @@ function z(){console.log('z()');
  o.beginElementAt(0.02)
 }
 
-function v(){console.log('v()');
+function v(){console.log('v() n =',n,'mpath=',m.id);
  let e=aI(cR(m.C));
  let c=aI(cC);
  let o=aT(e.x,e.y,c.x,c.y,20,1,m.parentNode,'0 '+m.R.x+' '+m.R.y,'-');
@@ -275,6 +278,13 @@ function w(){console.log('w()');
  let p0=m.U-cC.W
     ,p1=m.U+cC.W
     ,w0=w1=cC.W;
+/*---------------*/
+if(m.C){
+ let P0=m.getPointAtLength(p0);
+ let P1=m.getPointAtLength(p1);console.log('W green=',m.R || m.C,'lightgreen=',P0,P1);
+ cE('circle',{cx:P0.x,cy:P0.y,r:5,fill:'lightgreen',id:'p0'+m.id},m.C.parentNode)
+ cE('circle',{cx:P1.x,cy:P1.y,r:5,fill:'lightgreen',id:'p1'+m.id},m.C.parentNode)
+}
  dk=p0/m.L+';'+p1/m.L;
  W=w0+w1;
  I=W/16;
@@ -302,7 +312,7 @@ var dT
  ,ac
  ,gG;
 
-function q(j,T,X){console.log('q(j='+j+', T='+T+', X='+X+')');
+function q(j,T,X){console.log('q() j=',j,' T=',T,' X=',X);
  let r,d,x,k=true,sf=fg;
 
  const qL=()=>{
@@ -367,10 +377,10 @@ function qR(e){
  if(ds)e.target.parentNode.remove()
 }
 
-function aS(){console.log('aS()');
+function aS(){
  ac++;
  if(ac<2)return;
- ds=false;
+ ds=false;console.log('aS() n=',n)
  document.querySelectorAll('animateMotion[id^="aM'+n+'_"]').forEach(i=>{
   i.endElement();
   pa.push(i.parentNode.firstChild)
