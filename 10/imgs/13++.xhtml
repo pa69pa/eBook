@@ -52,7 +52,7 @@ object{
 <script type="application/javascript">
 //<![CDATA[
 var fg,fs = document.getElementById('fs'),ug,ub = document.getElementById('ub');
-var aP,cC,m,n=0,Z=true,S=5,W,I,zz=320;
+var aP,cC,m,n=0,tx=[],Z=true,S=5,W,I,lo=320;
 window.top.l3=0;
 
 var pA=new Promise(resolve=>{ aP=resolve.bind(this,'ap') });
@@ -107,9 +107,9 @@ function aX(){
  return rf(pa.length-2*h)+h
 }
 
-function a(x){console.log('AAAAAAAAAAAAAA N =',n,'x =',x,pa)
+function a(x){//console.log('AAAAAA N =',n,'x =',x,pa)
  let i,o,t;
- m=pa[x];m.style.stroke='coral';
+ m=pa[x];//m.style.stroke='coral';
  if(n>0){
     i=aI( cR( m.parentNode.childNodes[1] ) );
     let c=aI(cC);
@@ -133,7 +133,7 @@ function a(x){console.log('AAAAAAAAAAAAAA N =',n,'x =',x,pa)
   if(n>0 && i!=x)t.addEventListener('endEvent',(e)=>{e.target.parentNode.parentNode.remove()});
  });
 
- o.beginElementAt(1);
+ o.beginElement();
 }
 
 function aG(p){
@@ -156,7 +156,7 @@ const wvz={
 ,1:v
 ,2:z
 }
-function aT(ix,iy,cx,cy,s,j,gG,gXY,k){console.log('aT(n=',n,' j=',j,' s=',s,' gG=',gG,')');
+function aT(ix,iy,cx,cy,s,j,gG,gXY,k){//console.log('aT(n=',n,' j=',j,' s=',s,' gG=',gG,')');
  let o={attributeType:'XML',attributeName:'transform'
     ,type:'rotate'
     ,id:'r'+j+n
@@ -169,11 +169,9 @@ function aT(ix,iy,cx,cy,s,j,gG,gXY,k){console.log('aT(n=',n,' j=',j,' s=',s,' gG
  if(j==1 && !gG)o.begin='r0'+n+'.end+0.02s';
 
  o=cE('animateTransform',o,gG?gG:g);
- if(j==0){o.addEventListener('endEvent',wvz[n]);
- console.log('aT endEvent n=',n);
-}
+ if(j==0)o.addEventListener('endEvent',wvz[n]);
 
- if(n>0 || j==1){console.log('aT() translate');
+ if(n>0 || j==1){//console.log('aT() translate');
  cE('animateTransform',{attributeType:'XML',attributeName:'transform'
  ,type:'translate'
  ,begin:'r'+j+n+'.begin'
@@ -210,20 +208,20 @@ function cR(o){
  return b
 }
 
-function z(){console.log('z() n ='+n+' m.id =',m.id);
+function z(){//console.log('z() n ='+n+' m.id =',m.id);
  let id=m.id+'_';
  let id_='g_'+(Z?'A':'B');
  g=cE('g',{id:id_},svg);
  gG=cE('g',{id:'g'+id},g);
-////black
+
  let p=cE('path',{id:id,d:m.getAttribute('d')
- ,stroke:'green','stroke-width':10,'stroke-opacity':dp
+ ,stroke:'black','stroke-width':10,'stroke-opacity':dp
  },gG);
 
- gG.setAttributeNS(null,'transform','scale(8,8) translate('+m.X+', -'+zz+')');
+ gG.setAttributeNS(null,'transform','scale(8,8) translate('+m.X+', -'+lo+')');
  p.C=cE('circle',{cx:m.R.x,cy:m.R.y,r:5,fill:'green',id:'c'+id},gG);
  let pG=cR(p.C);
- let mC=cE('circle',{cx:-1*m.X,cy:zz,r:5,fill:'indigo',id:'i'+id},m.parentNode,true);
+ let mC=cE('circle',{cx:-1*m.X,cy:lo,r:5,fill:'indigo',id:'i'+id},m.parentNode,true);
  let mG=cR(m.C);
 
  mG.X0=mG.X-mC.X
@@ -234,9 +232,9 @@ function z(){console.log('z() n ='+n+' m.id =',m.id);
  let a1=Math.atan2(mG.Y0,mG.X0);
  let a2=Math.atan2(pG.Y0,pG.X0);
  let a0=(a2-a1)*-180/Math.PI;
- gG.setAttributeNS(null,'transform','scale(8,8) translate('+m.X+', -'+zz+') rotate('+a0+' '+(-1*m.X)+', '+zz+')');
+ gG.setAttributeNS(null,'transform','scale(8,8) translate('+m.X+', -'+lo+') rotate('+a0+' '+(-1*m.X)+', '+lo+')');
 
- let t=aI(mC);console.log('z() translate('+t.x+','+t.y+')');
+ let t=aI(mC);//console.log('z() translate('+t.x+','+t.y+')');
  g.setAttributeNS(null,'transform','translate('+t.x+','+t.y+')');
 
  document.querySelectorAll('svg > g:not(#'+id_+')').forEach(i=>{
@@ -260,31 +258,25 @@ function z(){console.log('z() n ='+n+' m.id =',m.id);
  },p);
  n=0;
  m=p;
- Z=!Z
+ Z=!Z;
  w();
- o.beginElementAt(0.02)
+ o.beginElement()
 }
 
-function v(){console.log('v() n =',n,'mpath=',m.id);
+function v(){//console.log('v() n =',n,'mpath=',m.id);
  let e=aI(cR(m.C));
  let c=aI(cC);
  let o=aT(e.x,e.y,c.x,c.y,20,1,m.parentNode,'0 '+m.R.x+' '+m.R.y,'-');
  w();
- o.beginElementAt(0.02)
+ o.beginElement()
 }
 
-function w(){console.log('w()');
+function w(){//console.log('w()');
  n++;
  let p0=m.U-cC.W
     ,p1=m.U+cC.W
     ,w0=w1=cC.W;
-/*--------
-if(m.C){
- let P0=m.getPointAtLength(p0);
- let P1=m.getPointAtLength(p1);console.log('W green=',m.R || m.C,'lightgreen=',P0,P1);
- cE('circle',{cx:P0.x,cy:P0.y,r:5,fill:'lightgreen',id:'p0'+m.id},m.C.parentNode)
- cE('circle',{cx:P1.x,cy:P1.y,r:5,fill:'lightgreen',id:'p1'+m.id},m.C.parentNode)
-}-------*/
+
  dk=p0/m.L+';'+p1/m.L;
  W=w0+w1;
  I=W/16;
@@ -351,7 +343,7 @@ function q(j,T,X){//console.log('q() j=',j,' T=',T,' X=',X);
  p.R=aG(p);
  p.C=cE('circle',{cx:p.R.x,cy:p.R.y,r:5,fill:'green',id:'c'+id},G);
 
- G.setAttributeNS(null,'transform','scale(0.0125,-0.0125) translate('+p.X+', -'+zz+')');
+ G.setAttributeNS(null,'transform','scale(0.0125,-0.0125) translate('+p.X+', -'+lo+')');
 
  let o=cE('animateMotion',{id:'aM'+n+'_'+j
  ,begin: j==0 ? '0s' : 'aM'+n+'_'+(j-1)+'.begin + '+dt+'s'
@@ -380,7 +372,7 @@ function qR(e){
 function aS(){
  ac++;
  if(ac<2)return;
- ds=false;console.log('aS() n=',n)
+ ds=false;//console.log('aS() n=',n)
  document.querySelectorAll('animateMotion[id^="aM'+n+'_"]').forEach(i=>{
   i.endElement();
   pa.push(i.parentNode.firstChild)
